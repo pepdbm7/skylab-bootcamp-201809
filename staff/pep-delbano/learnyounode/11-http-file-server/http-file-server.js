@@ -24,13 +24,13 @@ La documentación del módulo http puede verse en: {rootdir:/node_apidoc/http.ht
 Recuerda que el módulo fs tiene APIs para streaming de archivos. Debes usar fs.createReadStream() para crear un stream que represente el archivo de entrada. Luego puedes concatenar el stream con pipe src.pipe(dst) para pasar los datos del stream src al stream writer de salida dst. Es decir puedes conectar un filesystem stream a un HTTP response stream. */
 
 
-const http = require('http')
+const http = require('http')  //ahora no usamos más tcp,  sino http, q está x encima (podríamos usar Postman)
 const fs = require('fs')
 
-const server = http.createServer(function (req, res) {
-  res.writeHead(200, { 'content-type': 'text/plain' })
+const server = http.createServer(function (req, res) {  //primero creamos el servidor, q escuchará las peticiones
+  res.writeHead(200, { 'content-type': 'text/plain' })  //
 
-  fs.createReadStream(process.argv[3]).pipe(res)
+  fs.createReadStream(process.argv[3]).pipe(res) //
 })
 
-server.listen(Number(process.argv[2]))
+server.listen(Number(process.argv[2])) //

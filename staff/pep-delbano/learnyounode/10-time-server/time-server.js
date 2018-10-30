@@ -48,15 +48,15 @@ function zeroFill (i) {
 
 function now () {
   const d = new Date()
-  return d.getFullYear() + '-' +
+  return d.getFullYear() + '-' + //toda la fecha y hora
     zeroFill(d.getMonth() + 1) + '-' +
     zeroFill(d.getDate()) + ' ' +
     zeroFill(d.getHours()) + ':' +
     zeroFill(d.getMinutes())
 }
 
-const server = net.createServer(function (socket) {  //net es lun modulo q importamos, y con su método createServer, creamos un server, y éste establece un socket (una especie de canal o tubo por donde se comunicarán cliente y server sin pausa, hasta q con el método .end, acabemos esa conexión)
-  socket.end(now() + '\n')  //
+const server = net.createServer(function (socket) {  //net es lun modulo q importamos, y con su método createServer, creamos un server, y éste establece un socket (una especie de canal o tubo por donde se comunicarán cliente y server sin pausa)
+  socket.end(now() + '\n')  //con el método .end, acabamos esa conexión
 })
 
 server.listen(Number(process.argv[2]))
