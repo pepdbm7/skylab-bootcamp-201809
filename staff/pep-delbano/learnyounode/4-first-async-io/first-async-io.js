@@ -14,12 +14,17 @@ Puedes validar si ocurrió un error controlando si el primer parámetro es nulo.
 
 Puedes leer la documentación del módulo fs en: {rootdir:/node_apidoc/fs.html} */
 
-var fs = require('fs');
-const [, , file] = process.argv;
 
-fs.readFile(process.argv[2], 'utf8', (err, text) => {
-    if (err) throw err
+const fs = require('fs')
+const file = process.argv[2]
 
-    const count = text.match (/[^\n]*\n[^\n]*/gi).length
-    console.log(count)
-});
+fs.readFile(file, 'utf8', (err, contents) {  //para pasar el data que es un Buffer, a un string, ponemos como 2º parametro el utf8!
+  if (err) {
+    return console.log(err)
+  }
+  const lines = contents.split('\n').length - 1
+  console.log(lines)
+
+  //también se puede utilizar:  
+  //const lines = contents.toString().split('\n').length - 1
+})

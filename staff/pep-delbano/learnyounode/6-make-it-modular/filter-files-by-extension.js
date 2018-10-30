@@ -47,16 +47,16 @@ function bar (callback) {
 const fs = require('fs')
 const path = require('path')
 
-module.exports = function (dir, filterStr, callback) {
-  fs.readdir(dir, function (err, list) {
+module.exports = function (dir, filterStr, callback) {  //el 3º param es la callback, la definimos aquí y la exportamos al otro archivo
+  fs.readdir(dir, function (err, list) {  //
     if (err) {
-      return callback(err)
+      return callback(err)  //controlamos errores: si hay, los devolvemos al principio
     }
 
     list = list.filter(function (file) {
-      return path.extname(file) === '.' + filterStr
+      return path.extname(file) === '.' + filterStr //imprimir los archivos filtrados con esa extensión
     })
 
-    callback(null, list)
+    callback(null, list)  //llamamos la callback, si no hay error (queda como null), y se devuelve el segundo param, list
   })
 }
