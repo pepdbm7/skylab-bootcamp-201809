@@ -1,3 +1,5 @@
+const fs = require('fs')
+const { User } = require('./data')
 const logic = require('./logic')
 
 const { expect } = require('chai')
@@ -7,171 +9,100 @@ const { expect } = require('chai')
 // debug -> $ mocha debug src/logic.spec.js --timeout 10000
 
 describe('logic', () => {
+    before(() => {
+        User._file = './data/users.spec.json'
+    })
+
     describe('register', () => {
+        let name, surname, username, password
+
+        beforeEach(() => {
+            fs.writeFileSync(User._file, JSON.stringify([]))
+
+            name = `name-${Math.random()}`
+            surname = `surname-${Math.random()}`
+            username = `username-${Math.random()}`
+            password = `password-${Math.random()}`
+        })
+
         it('should succeed on correct data', () => {
-        expect(() =>
-            logic.registerUser('John', 'Doe', 'jd', '123')
-        ).not.to.throw()
+            debugger
+            logic.registerUser(name, surname, username, password)
+
+            const json = fs.readFileSync(User._file)
+
+            const users = JSON.parse(json)
+
+            const [user] = users
+
+            expect(user.name).to.equal(name)
+            expect(user.surname).to.equal(surname)
+            expect(user.username).to.equal(username)
+            expect(user.password).to.equal(password)
         })
 
-        it('should fail on trying to register twice same user', () => {
-            const username = 'jd'
-            return logic.registerUser('John', 'Doe', username, '123')
-            expect(()=> {
-                logic.registerUser('',)
-            })
-        })
-        it('should fail on trying to register twice same user', () => {
-            const username = `jd-${Math.random()}`
-
-            logic.registerUser('John', 'Doe', username, '123')
-
-            expect(() =>
-                logic.registerUser('John', 'Doe', username, '123')
-            ).to.throw(Error, `username ${username} already registered`)
+        it('should fail on undefined name', () => {
+            expect(() => logic.registerUser(undefined, surname, username, password)).to.throw(TypeError, 'undefined is not a string')
         })
 
-        it('should fail on name different to string', () => {
-            const name = undefined
-            expect(() =>
-                logic.registerUser(name, 'Doe', 'jd', '123')
-            ).to.throw(TypeError, `${name} is not a string`)
-        })
-
-        it('should fail on surname different to string', () => {
-            const surname = undefined
-            expect(() =>
-                logic.registerUser('John', surname, 'jd', '123')
-            ).to.throw(TypeError, `${surname} is not a string`)
-        })
-
-        it('should fail on username different to string', () => {
-            const username = undefined
-            expect(() =>
-                logic.registerUser('John', 'Doe', username, '123')
-            ).to.throw(TypeError, `${username} is not a string`)
-        })
-
-        it('should fail on password different to string', () => {
-            const password = undefined
-            expect(() =>
-                logic.registerUser('John', 'Doe', 'jd', password)
-            ).to.throw(TypeError, `${password} is not a string`)
-        })
-
-
+        // TODO other test cases
     })
 
-    const logic = require('./logic')
+    describe('authenticate', () => {
+        let user
 
-const { expect } = require('chai')
+        beforeEach(() => {
+            user = new User('John', 'Doe', 'jd', '123')
 
-// running test from CLI
-// normal -> $ mocha src/logic.spec.js --timeout 10000
-// debug -> $ mocha debug src/logic.spec.js --timeout 10000
-
-describe('logic', () => {
-    describe('users', () => {
-        describe('register', () => {
-            it('should succeed on correct data', () => {
-                const username = `jd-${Math.random()}`
-
-                expect(() =>
-                    logic.registerUser('John', 'Doe', username, '123')
-                ).not.to.throw()
-            })
-
-            it('should fail on trying to register twice same user', () => {
-                const username = `jd-${Math.random()}`
-
-                logic.registerUser('John', 'Doe', username, '123')
-
-                expect(() =>
-                    logic.registerUser('John', 'Doe', username, '123')
-                ).to.throw(Error, `username ${username} already registered`)
-            })
-
-            it('should fail on name different to string', () => {
-                const name = undefined
-                expect(() =>
-                    logic.registerUser(name, 'Doe', 'jd', '123')
-                ).to.throw(TypeError, `${name} is not a string`)
-            })
-
-            it('should fail on surname different to string', () => {
-                const surname = undefined
-                expect(() =>
-                    logic.registerUser('John', surname, 'jd', '123')
-                ).to.throw(TypeError, `${surname} is not a string`)
-            })
-
-            it('should fail on username different to string', () => {
-                const username = undefined
-                expect(() =>
-                    logic.registerUser('John', 'Doe', username, '123')
-                ).to.throw(TypeError, `${username} is not a string`)
-            })
-
-            it('should fail on password different to string', () => {
-                const password = undefined
-                expect(() =>
-                    logic.registerUser('John', 'Doe', 'jd', password)
-                ).to.throw(TypeError, `${password} is not a string`)
-            })
-
-            //BLANK
+            fs.writeFileSync(User._file, JSON.stringify([user]))
         })
 
-        describe('login', () => {
-            describe('with existing user', () => {
-                let username, password
+        it('should authenticate on correct credentials', () => {
+            const { username, password } = user
 
-                beforeEach(() => {
-                    const name = 'John', surname = 'Doe'
+            const id = logic.authenticateUser(username, password)
 
-                    username = `jd-${Math.random()}`
-                    password = `123-${Math.random()}`
+            expect(id).to.exist
+            expect(id).to.be.a('number')
 
-                    return logic.registerUser(name, surname, username, password)
-                })
+            const json = fs.readFileSync(User._file)
 
-                it('should succeed on correct data', () =>
-                    
-                    expect(() =>
-                        logic.login(username, password)
-                    ).not.to.throw()
-                )
+            const users = JSON.parse(json)
 
-                it('should fail on username different to string', () => {
-                    const username = undefined
-                    
-                    expect(() =>
-                        logic.login(username, password)
-                    ).to.throw(TypeError, `${username} is not a string`)
-                })
-    
-                it('should fail on password different to string', () => {
-                    const password = undefined
+            const [_user] = users
 
-                    expect(() =>
-                        logic.login(username, password)
-                    ).to.throw(TypeError, `${password} is not a string`)
-                })
-
-                //BLANK
-
-            })
+            expect(_user.id).to.equal(id)
         })
 
-        describe('loggedIn', () => { 
+        it('should fail on undefined username', () => {
+            expect(() => logic.authenticateUser(undefined, user.password)).to.throw(TypeError, 'undefined is not a string')
         })
 
-        describe('logout', () => { 
-
-        })
-
-
-
+        // TODO other test cases
     })
-})
+
+    describe('retrieve', () => {
+        let user
+
+        beforeEach(() => {
+            user = new User('John', 'Doe', 'jd', '123')
+
+            fs.writeFileSync(User._file, JSON.stringify([user]))
+        })
+
+        it('should succeed on valid id', () => {
+            const _user = logic.retrieveUser(user.id)
+
+            expect(_user).to.be.instanceof(User)
+
+            const { id, name, surname, username, password } = _user
+
+            expect(id).to.exist
+            expect(id).to.equal(user.id)
+            expect(name).to.equal(user.name)
+            expect(surname).to.equal(user.surname)
+            expect(username).to.equal(user.username)
+            expect(password).to.be.undefined
+        })
+    })
 })
