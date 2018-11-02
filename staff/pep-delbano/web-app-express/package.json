@@ -1,8 +1,8 @@
 {
-  "name": "web-app-express",
+  "name": "web-app",
   "version": "1.0.0",
   "description": "",
-  "main": "web-app.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,7 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "chai": "^4.2.0",
+    "body-parser": "^1.18.3",
+    "cookie-session": "^2.0.0-beta.3",
     "express": "^4.16.4"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0"
   }
 }

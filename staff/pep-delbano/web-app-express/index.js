@@ -1,4 +1,7 @@
 const express = require('express')
+const cookieSession = require('cookie-session')
+const bodyParser = require('body-parser')
+const buildView = require('./helpers/build-view')
 const logic = require('./logic')
 
 const { argv: [, , port = 8080] } = process
@@ -7,30 +10,21 @@ const app = express()
 
 let error = null
 
+const formBodyParser = bodyParser.urlencoded({ extended: false })
+
+const myCookieSession = cookieSession({
+    name: 'session',
+    keys: ['my secret 1', 'my secret 2']
+})
+
 app.get('/', (req, res) => {
     error = null
 
-    res.send(`<!DOCTYPE html>
-<html>
-    <head>
-        <title>Hello World!</title>
-    </head>
-    <body>
-        <h1>Hello World!</h1>
-        <a href="/login">Login</a> or <a href="/register">Register</a>
-    </body>
-</html>`)
+    res.send(buildView(`<a href="/login">Login</a> or <a href="/register">Register</a>`))
 })
 
 app.get('/register', (req, res) => {
-    res.send(`<!DOCTYPE html>
-<html>
-    <head>
-        <title>Hello World!</title>
-    </head>
-    <body>
-        <h1>Hello World!</h1>
-        <form action="/register" method="POST">
+    res.send(buildView(`<form action="/register" method="POST">
             <input type="text" name="name" placeholder="Name">
             <input type="text" name="surname" placeholder="Surname">
             <input type="text" name="username" placeholder="username">
@@ -38,140 +32,76 @@ app.get('/register', (req, res) => {
             <button type="submit">Register</button>
         </form>
         ${error ? `<p style="color: red">${error}</p>` : ''}
-        <a href="/">go back</a>
-    </body>
-</html>`)
+        <a href="/">go back</a>`))
 })
 
-app.post('/register', (req, res) => {
-    let data = ''
+app.post('/register', formBodyParser, (req, res) => {
+    const { name, surname, username, password } = req.body
 
-    req.on('data', chunk => data += chunk)
+    try {
+        logic.registerUser(name, surname, username, password)
 
-    req.on('end', () => {
-        const keyValues = data.split('&')
+        error = null
 
-        const user = {}
+        res.send(buildView(`<p>Ok! user ${name} registered.</p>
+                <a href="/">go back</a>`))
+    } catch ({ message }) {
+        error = message
 
-        keyValues.forEach(keyValue => {
-            const [key, value] = keyValue.split('=')
-
-            user[key] = value
-        })
-
-        const { name, surname, username, password } = user
-
-        try {
-            logic.registerUser(name, surname, username, password)
-
-            error = null
-
-            res.send(`<!DOCTYPE html>
-                    <html>
-                        <head>
-                            <title>Hello World!</title>
-                        </head>
-                        <body>
-                            <h1>Hello World!</h1>
-                            <p>Ok! user ${user.name} registered.</p>
-                            <a href="/">go back</a>
-                        </body>
-                    </html>`)
-        } catch ({ message }) {
-            error = message
-
-            res.redirect('/register')
-        }
-    })
+        res.redirect('/register')
+    }
 })
 
 app.get('/login', (req, res) => {
-    res.send(`<!DOCTYPE html>
-<html>
-    <head>
-        <title>Hello World!</title>
-    </head>
-    <body>
-        <h1>Hello World!</h1>
-        <form action="/login" method="POST">
+    res.send(buildView(`<form action="/login" method="POST">
             <input type="text" name="username" placeholder="username">
             <input type="password" name="password" placeholder="password">
             <button type="submit">Login</button>
         </form>
         ${error ? `<p style="color: red">${error}</p>` : ''}
-        <a href="/">go back</a>
-    </body>
-</html>`)
+        <a href="/">go back</a>`))
 })
 
-app.post('/login', (req, res) => {
-    let data = ''
+app.post('/login', [formBodyParser, myCookieSession], (req, res) => {
+    const { username, password } = req.body
 
-    req.on('data', chunk => data += chunk)
+    try {
+        const id = logic.authenticateUser(username, password)
 
-    req.on('end', () => {
-        const keyValues = data.split('&')
+        req.session.userId = id
 
-        const user = {}
+        error = null
 
-        keyValues.forEach(keyValue => {
-            const [key, value] = keyValue.split('=')
+        res.redirect('/home')
+    } catch ({ message }) {
+        error = message
 
-            user[key] = value
-        })
-
-        const { username, password } = user
-
-        try {
-            logic.login(username, password)
-
-            error = null
-
-            res.redirect('/home')
-        } catch ({ message }) {
-            error = message
-
-            res.redirect('/login')
-        }
-    })
+        res.redirect('/login')
+    }
 })
 
-app.get('/home', (req, res) => {
-    if (logic.loggedIn)
-        res.send(`<!DOCTYPE html>
-                <html>
-                    <head>
-                        <title>Hello World!</title>
-                    </head>
-                    <body>
-                        <h1>Hello World!</h1>
-                        <p>Welcome ${logic._user.name}!</p>
-                        <a href="/logout">logout</a>
-                    </body>
-                </html>`)
-    else res.redirect('/')
+app.get('/home', myCookieSession, (req, res) => {
+    const id = req.session.userId
+
+    if (id) {
+        const user = logic.retrieveUser(id)
+
+        res.send(buildView(`<p>Welcome ${user.name}!</p>
+                        <a href="/logout">logout</a>`))
+    } else res.redirect('/')
 })
 
-app.get('/logout', (req, res) => {
-    logic.logout()
+app.get('/logout', myCookieSession, (req, res) => {
+    req.session.userId = null
 
     res.redirect('/')
 })
 
 app.get('/users', (req, res) => {
-    res.send(`<!DOCTYPE html>
-<html>
-    <head>
-        <title>Hello World!</title>
-    </head>
-    <body>
-        <h1>Hello World!</h1>
-        <ul>
+    res.send(buildView(`<ul>
             ${logic._users.map(user => `<li>${user.id} ${user.name} ${user.surname}</li>`).join('')}
         </ul>
-        <a href="/">go back</a>
-    </body>
-</html>`)
+        <a href="/">go back</a>`))
 })
 
 app.listen(port, () => console.log(`Server up and running on port ${port}`))
