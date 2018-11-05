@@ -1,8 +1,11 @@
 const fs = require('fs')
 
 class User {
-    constructor(name, surname, username, password) {
-        this.id = Date.now()
+    constructor(user) {
+        const { id, name, surname, username, password } = user
+
+        this.id = id || Date.now()
+
         this.name = name
         this.surname = surname
         this.username = username
@@ -11,55 +14,66 @@ class User {
     }
 
     save() {
-        let json = fs.readFileSync(User._file)
+        return new Promise((resolve, reject) => {
+            fs.readFile(User._file, (err, json) => {  //read data from stream, throw error if there is, and return the content of the json
+                if (err) return reject(err)
 
-        const users = JSON.parse(json)
+                const users = JSON.parse(json)  //users is the data, in object format
 
-        // const user = users.find(user => user.id === this.id)
+                const index = users.findIndex(user => user.id === this.id)  //search if it already exists
 
-        // if (!user) users.push(this)
-        // else {
-        //     user.name = this.name
-        //     user.surname = this.surname
-        //     user.username = this.username
-        //     user.password = this.password
-        // }
+                if (index < 0) users.push(this)  //if not found, is new user so we save it to the data object (users) 
+                else users[index] = this
 
-        const index = users.findIndex(user => user.id === this.id)
+                json = JSON.stringify(users)  //parse it to string to save data to users.json file
 
-        if (index < 0) users.push(this)
-        else users[index] = this
+                fs.writeFile(User._file, json, (err) => {  //WRITE ??
+                    if (err) return reject(err)
 
-        json = JSON.stringify(users)
-
-        fs.writeFileSync(User._file, json)
+                    resolve()
+                })
+            })
+        })
     }
 
+    // toObject() {
+    //     const { name, surname, username, password } = this
+
+    //     return { name, surname, username, password }
+    // }
+
+    
+ //static: we can access to the methods without calling the class 'User'
+
     static findByUsername(username) {
-        const json = fs.readFileSync(User._file)
+        return new Promise((resolve, reject) => {
+            fs.readFile(User._file, (err, json) => {
+                if (err) return reject(err)
 
-        const users = JSON.parse(json)
+                const users = JSON.parse(json)
 
-        const user = users.find(user => user.username === username)
+                const user = users.find(user => user.username === username)
 
-        // TODO is user an instance of User?
-
-        return user
+                resolve(user ? new User(user) : undefined)
+            })
+        })
     }
 
     static findById(id) {
-        const json = fs.readFileSync(User._file)
+        return new Promise((resolve, reject) => {
+            fs.readFile(User._file, (err, json) => {
+                if (err) return reject(err)
 
-        const users = JSON.parse(json)
+                const users = JSON.parse(json)
 
-        const user = users.find(user => user.id === id)
+                const user = users.find(user => user.id === id)
 
-        // TODO is user an instance of User?
-
-        return user
+                resolve(user ? new User(user) : undefined)
+            })
+        })
     }
 }
 
-User._file = './data/users.json'
+User._file = './data/users.json'  //el file será lo q contenga el obj del json, con data de cada user registrado 
 
 module.exports = User

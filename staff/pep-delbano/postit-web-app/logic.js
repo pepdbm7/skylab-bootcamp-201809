@@ -12,13 +12,14 @@ const logic = {
         if (!username.trim()) throw Error('username is empty or blank')
         if (!password.trim()) throw Error('password is empty or blank')
 
-        let user = User.findByUsername(username)
+        return User.findByUsername(username)
+            .then(user => {
+                if (user) throw Error(`username ${username} already registered`)
 
-        if (user) throw Error(`username ${username} already registered`)
+                user = new User({ name, surname, username, password })
 
-        user = new User(name, surname, username, password)
-
-        user.save()
+                return user.save()
+            })
     },
 
     authenticateUser(username, password) {
@@ -28,32 +29,68 @@ const logic = {
         if (!username.trim()) throw Error('username is empty or blank')
         if (!password.trim()) throw Error('password is empty or blank')
 
-        const user = User.findByUsername(username)
+        return User.findByUsername(username)
+            .then(user => {
+                if (!user || user.password !== password) throw Error('invalid username or password')
 
-        if (!user || user.password !== password) throw Error('invalid username or password')
-
-        return user.id
+                return user.id
+            })
     },
 
-    retrieveUser(id) {
+    retrieveUser(id, postits) {
+        
         if (typeof id !== 'number') throw TypeError(`${id} is not a number`)
 
-        const user = User.findById(id)
+        return User.findById(id)
+            .then(user => {
+                if (!user) throw Error(`user with id ${id} not found`)
 
-        if (!user) throw Error(`user with id ${id} not found`)
+                const _user = new User(
+                    user.name,
+                    user.surname,
+                    user.username,
+                    user.password
+                )
+        
+                _user.id = id
 
-        const _user = new User(
-            user.name,
-            user.surname,
-            user.username,
-            user.password
-        )
+                _user.postits = postits
+                // delete _user.password
 
-        _user.id = user.id
-        _user.postits = user.postits
-        // delete _user.password
+                return _user
+            })
+    },
 
-        return _user
+    createPostit(id, postit) {
+
+        // const user = this.retrieveUser(id)
+
+        // user.postits.push({
+        //     postit: postit,
+        //     id: Date.now()
+        // })
+
+        // user.save()
+
+        return this.retrieveUser(id)
+            .then(user => {
+                user.postits.push({
+                    postit: postit,
+                    id: Date.now()
+            })
+            user.save()
+
+        })
+
+    },
+
+    deletePostit(userId,postitId) {
+
+        let user = this.retrieveUser(userId)
+
+        user.postits = user.postits.filter(item => item.id !== Number(postitId))
+
+        user.save()
     }
 }
 

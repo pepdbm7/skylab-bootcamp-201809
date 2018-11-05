@@ -1,37 +1,38 @@
+//VERSION before making it Async and before using Pug (HTML templater)
+
 require('dotenv').config()
 const express = require('express')
-const session = require('express-session')
+const session = require('express-session')   //to define session settings for our Express server
 // const FileStore = require('session-file-store')(session)
 const sessionFileStore = require('session-file-store')
 const FileStore = sessionFileStore(session)
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser') //an Express middleware to handle HTTP POST request to get and use data through a callback, to make promises i.e.
 const buildView = require('./helpers/build-view')
 const logic = require('./logic')
 
-const { argv: [, , port = process.env.PORT || 8080] } = process
+const { argv: [, , port = process.env.PORT || 8080] } = process  //to set up the port where we'll run the website (runing PORT=4444 node index.js, i.e.) and by default 8080
 
-const app = express()
+const app = express() //the express() fn is a top-level function exported by the express module
 
-app.use(express.static('./public'))
+app.use(express.static('./public'))  //middleware express function to use CSS, JS, img, etc from /public folder
 
 let error = null
 
 const formBodyParser = bodyParser.urlencoded({ extended: false })
 
-const mySession = session({ 
-    secret: 'my super secret', 
-    cookie: { maxAge: 60 * 60 * 24 },
-    resave: true,
+const mySession = session({  //fn to configurate our Express server and make that it accepts sessions
+    secret: 'my super secret',
+    cookie: { maxAge: 60 * 60 * 24 }, //session expires in 1 day
+    resave: true,  //it makes that for every request to the server, the data of the session will be stored in the database, having new changes or not..
     saveUninitialized: true,
     store: new FileStore({
         path: './.sessions'
-    })
+    }) //now we'll have available the variable req.session, and also a unique id for the session of a user that we can access through the variable req.sessionID.
 })
-
 
 app.get('/', (req, res) => {
     error = null
-
+    //we render the html of the page from the server-side, using the method buildView (we created it as a helper):
     res.send(buildView(`<a href="/login">Login</a> or <a href="/register">Register</a>`))
 })
 
@@ -82,8 +83,6 @@ app.post('/login', [formBodyParser, mySession], (req, res) => {
 
         req.session.userId = id
 
-        console.log(req.session.userId)
-
         error = null
 
         res.redirect('/home')
@@ -96,15 +95,12 @@ app.post('/login', [formBodyParser, mySession], (req, res) => {
 
 app.get('/home', mySession, (req, res) => {
     const id = req.session.userId
-    console.log(id)
 
     if (id) {
         const user = logic.retrieveUser(id)
 
         res.send(buildView(`<p>Welcome ${user.name}!</p>
-                        <a href="/logout">logout</a><br>
-                        <a href="/postits">Make Postit</a>
-                        `))
+                        <a href="/logout">logout</a>`))
     } else res.redirect('/')
 })
 
@@ -119,87 +115,6 @@ app.get('/users', (req, res) => {
             ${logic._users.map(user => `<li>${user.id} ${user.name} ${user.surname}</li>`).join('')}
         </ul>
         <a href="/">go back</a>`))
-})
-
-app.get('/postits', mySession, (req, res) => {
-    const id = req.session.userId
-    if (id) {
-        const user = logic.retrieveUser(id)
-
-        const listPostits = user.postits.map((item) => {
-            return `<li>
-           ${item.postit}
-           <form action="/postits/${item.id}" method="POST">
-            <button type="submit">x</button>
-            </form>
-            </li>`
-        }).join('')
-
-        res.send(buildView(`
-        <p>Welcome ${user.name}!</p>
-        <form action="/postits" method="POST">
-        <input type="text" name="postit"></input>
-        <button type="submit">Create</button>
-        <a href="/logout">logout</a>
-        </form>
-        <ul>
-            ${listPostits}
-        </ul>
-        
-        `))
-    } else res.redirect('/')
-})
-
-app.post('/postits/:id', mySession, (req, res) => {
-
-    const id = req.session.userId
-
-    let user = logic.retrieveUser(id)
-
-
-    user.postits = user.postits.filter(item => item.id !== Number(req.params.id))
-
-    user.save()
-
-    res.redirect('/postits')
-})
-
-app.post('/postits', [formBodyParser, mySession], (req, res) => {
-
-    const id = req.session.userId
-
-    const { postit } = req.body
-
-    const user = logic.retrieveUser(id)
-
-    user.postits.push({
-        postit: postit,
-        id: Date.now()
-    })
-
-    user.save()
-
-    res.redirect('/postits')
-
-
-
-
-
-    // res.redirect('/home')
-
-    // try {
-    //     const id = logic.authenticateUser(username, password)
-
-    //     req.session.userId = id
-
-    //     error = null
-
-    //     res.redirect('/home')
-    // } catch ({ message }) {
-    //     error = message
-
-    //     res.redirect('/login')
-    // }
 })
 
 app.listen(port, () => console.log(`Server up and running on port ${port}`))

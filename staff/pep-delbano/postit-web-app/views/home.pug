@@ -1,0 +1,9 @@
+extends layout
+block content
+    div.content
+        h2.title Welcome #{name}!
+        div.landing__buttons
+            button.btn.btn-lg.btn-dark.btn-inline-block
+                a(href="/postits") My Postit
+            button.btn.btn-lg.btn-light.btn-inline-block
+                a(href='/logout') Logout

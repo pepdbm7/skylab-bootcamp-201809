@@ -1,7 +1,61 @@
+body {
+    background-image: url(../images/space.jpg)
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    justify-content: space-around;
+    margin: 200px auto;
+    background-color: #f8f80ce8;
+	overflow: hidden;
+    filter: drop-shadow(3px 3px 10px rgba(0,0,0,0.8));
+    transform: rotate(3deg);
+    width: 20em;
+    min-height: 18em;
+    font-size: 30px;
+}
+
+.content {
+    width: 80%;
+    height: 80%;
+    padding: 80px;
+    transform: rotate(-3deg);
+    background: hsla(0, 0%, 75%, 0.411);
+}
+
 .title {
-    color: green;
+    font-size: 50px;
+}
+
+
+.landing__buttons {
+    width: 100%;
+   display: flex;
+   justify-content: space-evenly;
+}
+
+.btn-dark a {
+    color: white;
+}
+/* 
+a {
+    display: inline;
+    color: white;
+    text-decoration: underline;
+} */
+
+.btn-light a {
+    color: black;
 }
 
 .error {
     color: red;
 }
+
+.goBack {
+    display: inline;
+}
+

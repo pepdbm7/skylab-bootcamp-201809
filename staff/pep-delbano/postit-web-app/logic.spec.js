@@ -95,7 +95,7 @@ describe('logic', () => {
 
             expect(_user).to.be.instanceof(User)
 
-            const { id, name, surname, username, password } = _user
+            const { id, name, surname, username, password } = _user  //sería como const id = _user.id; const name= _user.name ... 
 
             expect(id).to.exist
             expect(id).to.equal(user.id)
