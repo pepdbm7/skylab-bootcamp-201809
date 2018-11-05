@@ -1,9 +1,16 @@
 extends layout
 block content
-    div.content
         h2.title Welcome #{name}!
-        div.landing__buttons
-            button.btn.btn-lg.btn-dark.btn-inline-block
-                a(href="/postits") My Postit
-            button.btn.btn-lg.btn-light.btn-inline-block
-                a(href='/logout') Logout
+        form.form-signin(action='/postits', method='POST')
+        input(type='text', name='postit')
+        button.btn.btn-lg.btn-dark.btn-inline-block(type='submit') Create
+         button.btn.btn-lg.btn-light.btn-inline-block
+            a(href='/logout') Logout
+         if error
+        p(class='error') #{error}
+
+        if postits.length
+            ul
+                each postit in postits
+                    li= postit.text
+                

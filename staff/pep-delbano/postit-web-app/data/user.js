@@ -10,6 +10,7 @@ class User {
         this.surname = surname
         this.username = username
         this.password = password
+
         this.postits = []
     }
 
@@ -36,11 +37,11 @@ class User {
         })
     }
 
-    // toObject() {
-    //     const { name, surname, username, password } = this
+    toObject() {
+        const { name, surname, username, password, postit } = this
 
-    //     return { name, surname, username, password }
-    // }
+        return { name, surname, username, password }
+    }
 
     
  //static: we can access to the methods without calling the class 'User'

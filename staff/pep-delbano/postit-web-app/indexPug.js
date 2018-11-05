@@ -39,8 +39,8 @@ app.get('/register', (req, res) => {
     res.render('register.pug', { error: req.session.error }) //render the views/register.pug file ..(if there is an error, will be shown in the HTML aswell)
 })
 
-app.post('/register', formBodyParser, (req, res) => {
-    const { name, surname, username, password } = req.body
+app.post('/register', formBodyParser, (req, res) => {  //normalmente los metodos post son los q redirigen a cierta ruta
+    const { name, surname, username, password } = req.body //cogemos esos campos del req.body
 
     try {
         logic.registerUser(name, surname, username, password)
@@ -65,7 +65,7 @@ app.get('/login', (req, res) => { //get the page of the route /login, and render
     res.render('login.pug', {error: req.session.error}) 
 })
 
-app.post('/login', [formBodyParser, mySession], (req, res) => {
+app.post('/login', formBodyParser, (req, res) => {
     const { username, password } = req.body
 
     try {
@@ -89,7 +89,7 @@ app.post('/login', [formBodyParser, mySession], (req, res) => {
     }
 })
 
-app.get('/home', mySession, (req, res) => {
+app.get('/home', (req, res) => {
     const id = req.session.userId
 
     if (id) {
@@ -99,12 +99,12 @@ app.get('/home', mySession, (req, res) => {
                 .catch(({ message }) => {
                     req.session.error = message
 
-                    res.redirect('/postits')
+                    res.redirect('/')
                 })
         } catch ({ message }) {
             req.session.error = message
 
-            res.redirect('/home')
+            res.redirect('/')
         }
     } else res.redirect('/home')
 })
