@@ -1,7 +1,7 @@
 //VERSION WITH PUG AND ASYNC (PROMISES)
 require('dotenv').config()
-const express = require('express') 
-const session = require('express-session') 
+const express = require('express')
+const session = require('express-session')
 const FileStore = require('session-file-store')(session)
 const bodyParser = require('body-parser')
 const logic = require('./logic')
@@ -15,7 +15,7 @@ const app = express()
 app.use(express.static('./public')) 
 app.set('view engine', 'pug') // to render pages server-side with express and the HTML templater 'pug'
 
-const formBodyParser = bodyParser.urlencoded({ extended: false })
+const formBodyParser = bodyParser.urlencoded({ extended: false })  //we use it in the post methods
 
 const mySession = session({  //we set up the server and make that it accepts sessions
     secret: 'my super secret', 
@@ -27,7 +27,7 @@ const mySession = session({  //we set up the server and make that it accepts ses
     }) 
 })
 
-app.use(mySession)   //SE NECESITA?? EN VERSIONES ANTERIORES SE USABA COMO PARÁMETRO EN app.get, pero AQUÍ NO! ¿?
+app.use(mySession)
 
 app.get('/', (req, res) => {
     req.session.error = null
@@ -61,8 +61,8 @@ app.post('/register', formBodyParser, (req, res) => {  //normalmente los metodos
     }
 })
 
-app.get('/login', (req, res) => { //get the page of the route /login, and render the login form, with errors if there are
-    res.render('login.pug', {error: req.session.error}) 
+app.get('/login', (req, res) => {
+    res.render('login', { error: req.session.error })
 })
 
 app.post('/login', formBodyParser, (req, res) => {
@@ -72,14 +72,14 @@ app.post('/login', formBodyParser, (req, res) => {
         logic.authenticateUser(username, password)
             .then(id => {
                 req.session.userId = id
-        
+
                 req.session.error = null
-        
+
                 res.redirect('/home')
             })
             .catch(({ message }) => {
                 req.session.error = message
-                
+
                 res.redirect('/login')
             })
     } catch ({ message }) {
@@ -90,12 +90,12 @@ app.post('/login', formBodyParser, (req, res) => {
 })
 
 app.get('/home', (req, res) => {
-    const id = req.session.userId
+    const { userId, postitId, error } = req.session
 
-    if (id) {
+    if (userId) {
         try {
-            logic.retrieveUser(id)
-                .then(({ name }) => res.render('home.pug', { name }))
+            logic.retrieveUser(userId)
+                .then(({ name, postits }) => res.render('home', { name, postits, postitId, error }))
                 .catch(({ message }) => {
                     req.session.error = message
 
@@ -106,7 +106,7 @@ app.get('/home', (req, res) => {
 
             res.redirect('/')
         }
-    } else res.redirect('/home')
+    } else res.redirect('/')
 })
 
 app.get('/logout', (req, res) => {
@@ -115,83 +115,51 @@ app.get('/logout', (req, res) => {
     res.redirect('/')
 })
 
-// app.get('/users', (req, res) => {
-//     res.send(buildView(`<ul>
-//             ${logic._users.map(user => `<li>${user.id} ${user.name} ${user.surname}</li>`).join('')}
-//         </ul>
-//         <a href="/">go back</a>`))
-// })
+app.post('/postits', formBodyParser, (req, res) => {
+    const { operation } = req.body
 
-app.get('/postits', mySession, (req, res) => {   //CÓMO PASAR el MAP al PUG??
-    const id = req.session.userId
-    if (id) {
-        const user = logic.retrieveUser(id)
+    try {
+        switch (operation) {
+            case 'add':
+                const { text } = req.body
 
-        const listPostits = user.postits.map((item) => {
-            return `<li>
-           ${item.postit}
-           <form action="/postits/${item.id}" method="POST">
-            <button type="submit">x</button>
-            </form>
-            </li>`
-        }).join('')
+                logic.addPostit(req.session.userId, text)
+                    .then(() => res.redirect('/home'))
+                    .catch(({ message }) => {
+                        req.session.error = message
 
-        res.render('postits.pug')
-        res.send(buildView(`
-        <p>Welcome ${user.name}!</p>
-        <form action="/postits" method="POST">
-        <input type="text" name="postit"></input>
-        <button type="submit">Create</button>
-        <a href="/logout">logout</a>
-        </form>
-        <ul>
-            ${listPostits}
-        </ul>`))
-    } else res.redirect('/home')
-})
+                        res.redirect('/home')
+                    })
 
-app.post('/postits/:id', mySession, (req, res) => {
+                break
+            case 'remove':
+                const { postitId } = req.body
 
-    const id = req.session.userId
+                logic.removePostit(req.session.userId, Number(postitId))
+                    .then(() => res.redirect('/home'))
+                    .catch(({ message }) => {
+                        req.session.error = message
 
-    if(id) {
-        try {
-            logic.retrieveUser(id)
-            .then(/*rellenar*/)
-            .catch(({ message }) => {
-                req.session.error = message
-                res.redirect('/')
-            })
-        } catch ({ message }) {
-            req.session.error = message
-            res.redirect('/')
+                        res.redirect('/home')
+                    })
+                break
+            case 'edit':
+                {
+                    const { postitId } = req.body
+
+                    req.session.postitId = postitId
+                }
+                
+                res.redirect('/home')
+                break
+            default:
+                res.redirect('/home')
         }
+    } catch ({ message }) {
+        req.session.error = message
+
+        res.redirect('/home')
     }
-
-
-    user.postits = user.postits.filter(item => item.id !== Number(req.params.id))
-
-    user.save()
-
-    res.redirect('/postits')
 })
 
-app.post('/postits', [formBodyParser, mySession], (req, res) => {
-
-    const id = req.session.userId
-
-    const { postit } = req.body
-
-    const user = logic.retrieveUser(id)
-
-    user.postits.push({
-        postit: postit,
-        id: Date.now()
-    })
-
-    user.save()
-
-    res.redirect('/postits')
-})
-
-app.listen(port, () => console.log(`Server up and running on port ${port}`))
+app.listen(port, () => console.log(`Server ${package.version} up and running on port ${port}`))

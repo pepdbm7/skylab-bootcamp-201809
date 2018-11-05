@@ -2,7 +2,7 @@ const fs = require('fs')
 
 class User {
     constructor(user) {
-        const { id, name, surname, username, password } = user
+        const { id, name, surname, username, password, postits } = user
 
         this.id = id || Date.now()
 
@@ -11,7 +11,7 @@ class User {
         this.username = username
         this.password = password
 
-        this.postits = []
+        this.postits = postits || []
     }
 
     save() {
@@ -19,16 +19,16 @@ class User {
             fs.readFile(User._file, (err, json) => {  //read data from stream, throw error if there is, and return the content of the json
                 if (err) return reject(err)
 
-                const users = JSON.parse(json)  //users is the data, in object format
+                const users = JSON.parse(json)  //we save the data, in object format, as const users
 
-                const index = users.findIndex(user => user.id === this.id)  //search if it already exists
+                const index = users.findIndex(user => user.id === this.id)  //search index of the id if it already exists
 
                 if (index < 0) users.push(this)  //if not found, is new user so we save it to the data object (users) 
                 else users[index] = this
 
                 json = JSON.stringify(users)  //parse it to string to save data to users.json file
 
-                fs.writeFile(User._file, json, (err) => {  //WRITE ??
+                fs.writeFile(User._file, json, (err) => {  //write data to the file json, and replace it if already exists
                     if (err) return reject(err)
 
                     resolve()
@@ -38,9 +38,9 @@ class User {
     }
 
     toObject() {
-        const { name, surname, username, password, postit } = this
+        const { name, surname, username, password, postits } = this
 
-        return { name, surname, username, password }
+        return { name, surname, username, password, postits }
     }
 
     
