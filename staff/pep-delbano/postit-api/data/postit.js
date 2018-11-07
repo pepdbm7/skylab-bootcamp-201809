@@ -1,4 +1,4 @@
-const uid = require('uuid/v4')
+const uid = require('uuid/v4')  //package para crear un id único
 
 class Postit {
     constructor({ id, text }) {
