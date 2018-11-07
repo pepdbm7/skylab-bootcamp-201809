@@ -1,10 +1,1 @@
-[
-    {
-        "id": "e5f07855-fcff-4141-9b3d-394d8d4f9286",
-        "name": "manuel",
-        "surname": "barzi",
-        "username": "mb",
-        "password": "123",
-        "postits": []
-    }
-]
+[{"id":"e5f07855-fcff-4141-9b3d-394d8d4f9286","name":"manuel","surname":"barzi","username":"mb","password":"123","postits":[]},{"id":"0f3fb67f-98a3-4b2f-b319-cbbd50f8ef1d","name":"pep","surname":"delbaño","username":"bb","password":"bb","postits":[{"id":"cd965d81-d42a-498b-98f5-9dcd0cbb8949","text":"hola mundo"}]}]

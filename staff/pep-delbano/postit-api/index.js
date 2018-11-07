@@ -14,6 +14,9 @@ const app = express()
 
 const jsonBodyParser = bodyParser.json()
 
+
+        //USER PART:
+//Save registered user data:
 app.post('/api/user', jsonBodyParser, (req, res) => {
     const { name, surname, username, password } = req.body
 
@@ -39,6 +42,8 @@ app.post('/api/user', jsonBodyParser, (req, res) => {
     }
 })
 
+
+//Authenticate (when user tries to login) we push his data to the api and make it search coincidences with the registered users of our database:
 app.post('/api/auth', jsonBodyParser, (req, res) => {
     const { username, password } = req.body
 
@@ -69,12 +74,13 @@ app.post('/api/auth', jsonBodyParser, (req, res) => {
     }
 })
 
+
+//Retrieve (get) the homepage of the user's account, when it has coincidate with the database user's data in the authentication:
 app.get('/api/user/:id', (req, res) => {
     const { params: { id }, headers: { authorization } } = req
 
-    const token = authorization.split(' ')[1]
-
     try {
+        const token = authorization.split(' ')[1]
         const { sub } = jwt.verify(token, JWT_SECRET)
 
         if (id !== sub) throw Error('token sub does not match user id')
@@ -100,120 +106,137 @@ app.get('/api/user/:id', (req, res) => {
     }
 })
 
-app.get('/logout', (req, res) => {
-    req.session.userId = null
 
-    res.redirect('/')
-})
+//Logout is made by React with a simple flag; we don't need any data from any API for that:
+// app.get('/logout', (req, res) => {
+//     req.session.userId = null
 
-app.put('/api/postit_add', jsonBodyParser, (req, res) => {
+//     res.redirect('/')
+// })
 
-    const { headers: { authorization } } = req
-    const token = authorization.split(' ')[1]
+
+
+
+        //POSTIT PART:
+//Add postit:   
+app.put('/api/users/:id/postits', jsonBodyParser, (req, res) => {
+    const { headers: { authorization }, params: { id }, body: { text } } = req
 
     try {
+        const token = authorization.split(' ')[1]
 
         const { sub } = jwt.verify(token, JWT_SECRET)
- 
-            const { text } = req.body
+
+        if (id !== sub) throw Error('token sub does not match user id')
 
             logic.addPostit(sub, text)
-                .then(() => {
-
-                    res.json({
+                .then(() => res.json({
                         status: 'OK',
-                        text
-                    })
-
-                })
-                .catch(({ message }) => {
-                    res.json({
+                        message: 'postit added'
+                    }))
+                .catch(({ message }) => res.json({
                         status: 'KO',
                         message
-                    })
-                })
+                    }))
 
     } catch ({ message }) {
-        // req.session.error = message
         res.json({
             status: 'KO',
             message
         })
-        // res.redirect('/home')
     }
 })
 
-//delete postit:
-app.delete('/api/postit_remove/:postit_id', jsonBodyParser, (req, res) => {
 
-    const { params: { postit_id }, headers: { authorization } } = req
-
-    const token = authorization.split(' ')[1]
+//To get the list of all the postits:
+app.get('/api/users/:id/postits', jsonBodyParser, (req, res) => {
+    const { headers: { authorization }, params: { id } } = req
 
     try {
+        const token = authorization.split(' ')[1]
 
         const { sub } = jwt.verify(token, JWT_SECRET)
 
-        logic.removePostit(sub, postit_id)
-            .then(() => {
+        if (id !== sub) throw Error('token sub does not match user id')
 
-                res.json({
-                    status: 'OK',
-                    text: 'postit deleted'
-                })
-
-            })
-            .catch(({ message }) => {
+        logic.listPostits(id)
+            .then(postits => res.json({
+                status: 'OK',
+                data: postits
+            }))
+            .catch(({ message }) =>
                 res.json({
                     status: 'KO',
                     message
                 })
-            })
-
+            )
     } catch ({ message }) {
-        // req.session.error = message
         res.json({
             status: 'KO',
             message
         })
-        // res.redirect('/home')
     }
 })
 
-//modify postit:
-app.put('/api/postit_modify/:postit_id', jsonBodyParser, (req, res) => {
 
-    const { params: { postit_id }, headers: { authorization } } = req
-
-    const token = authorization.split(' ')[1]
+//Edit postit: (put or patch, both are for update the content with new changes)
+app.put('/api/users/:id/postits/:postitId', jsonBodyParser, (req, res) => {
+    const { headers: { authorization }, params: { id, postitId }, body: { text } } = req
 
     try {
+        const token = authorization.split(' ')[1]
 
         const { sub } = jwt.verify(token, JWT_SECRET)
-        const { text } = req.body
-        logic.modifyPostit(sub, postit_id, text)
-            .then(() => {
 
-                res.json({
-                    status: 'OK',
-                    text: 'postit modified'
-                })
+        if (id !== sub) throw Error('token sub does not match user id')
 
-            })
-            .catch(({ message }) => {
+        logic.modifyPostit(id, postitId, text)
+            .then(() => res.json({
+                status: 'OK',
+                message: 'postit modified'
+            }))
+            .catch(({ message }) =>
                 res.json({
                     status: 'KO',
                     message
                 })
-            })
-
+            )
     } catch ({ message }) {
-        // req.session.error = message
         res.json({
             status: 'KO',
             message
         })
-        // res.redirect('/home')
+    }
+})
+
+
+//Delete a postit:
+app.delete('/api/users/:id/postits/:postitId', jsonBodyParser, (req, res) => {
+    const { headers: { authorization }, params: { id, postitId } } = req
+
+    try {
+        const token = authorization.split(' ')[1]
+
+        const { sub } = jwt.verify(token, JWT_SECRET)
+
+        if (id !== sub) throw Error('token sub does not match user id')
+
+        logic.removePostit(id, postitId)
+            .then(() => res.json({
+                status: 'OK',
+                message: 'postit removed'
+            }))
+            .catch(({ message }) =>
+                res.json({
+                    status: 'KO',
+                    message
+                })
+            )
+    } catch ({ message }) {
+        res.json({
+            status: 'KO',
+            message
+        })
     }
 })
 
