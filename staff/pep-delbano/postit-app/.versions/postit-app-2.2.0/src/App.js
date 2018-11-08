@@ -7,7 +7,6 @@ import Landing from './components/Landing'
 import logic from './logic'
 import { Route, withRouter, Redirect } from 'react-router-dom'
 
-logic.url = 'http://localhost:5000/api'
 
 class App extends Component {
     state = { error: null }
@@ -28,18 +27,15 @@ class App extends Component {
         }
     }
 
-    
     handleLogin = (username, password) => {
         try {
             logic.login(username, password)
-            .then(() =>  this.props.history.push('/postits'))
-            .catch(err => this.setState({ error: err.message }))
+                .then(() =>  this.props.history.push('/postits'))
+                .catch(err => this.setState({ error: err.message }))
         } catch (err) {
             this.setState({ error: err.message })
         }
     }
-    
-    handleUpdatePassClick = () => this.props.history.push('/updatepass')
 
     handleLogoutClick = () => {
         logic.logout()
@@ -59,11 +55,7 @@ class App extends Component {
             {error && <Error message={error} />}
 
             <Route path="/postits" render={() => logic.loggedIn ? <div>
-                
-                <section>
-                    <button onClick={this.handleUpdatePassClick}>Update Password</button>
-                    <button onClick={this.handleLogoutClick}>Logout</button>
-                </section>
+                <section><button onClick={this.handleLogoutClick}>Logout</button></section>
                 <Postits />
             </div> : <Redirect to="/" />} />
 

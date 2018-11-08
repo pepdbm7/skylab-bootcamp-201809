@@ -27,7 +27,7 @@ router.post('/users', jsonBodyParser, (req, res) => {
                     message: `${username} successfully registered`
                 })
             })
-    }, res)
+    }, res)  //the routehandler method has 2 parameters: a callback (in this case logic.registerUser, and res, to send the status code into the response before send it)
 })
 
 
@@ -52,7 +52,28 @@ router.post('/auth', jsonBodyParser, (req, res) => {
 })
 
 
-//Retrieve (get) the user's homepage account, when it has coincidate with the database user's data in the authentication:
+//to update password:
+router.post('/updatepassword', jsonBodyParser, (req, res) => {
+    routeHandler(() => {
+        const { params: { id }, body: { username, password} } = req
+
+        return logic.updatePass(username, password)
+            .then(id => {
+                const token = jwt.sign({ sub: id }, JWT_SECRET)
+
+                res.json({
+                    status: 'OK',
+                    data: {
+                        id,
+                        token
+                    }
+                })
+            })
+    }, res)
+})
+
+
+//Retrieve (get) the user's name, surname, username (not password nor postits)
 router.get('/users/:id', [bearerTokenParser, jwtVerifier], (req, res) => {
     routeHandler(() => {
         const { params: { id }, sub } = req
