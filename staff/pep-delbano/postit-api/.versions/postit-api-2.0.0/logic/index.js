@@ -13,7 +13,7 @@ const logic = {
         if (!username.trim()) throw new ValueError('username is empty or blank')
         if (!password.trim()) throw new ValueError('password is empty or blank')
 
-        return User.findOne({ username })
+        return User.findByUsername(username)
             .then(user => {
                 if (user) throw new AlreadyExistsError(`username ${username} already registered`)
 
@@ -30,7 +30,7 @@ const logic = {
         if (!username.trim()) throw new ValueError('username is empty or blank')
         if (!password.trim()) throw new ValueError('password is empty or blank')
 
-        return User.findOne({username})
+        return User.findByUsername(username)
             .then(user => {
                 if (!user || user.password !== password) throw new AuthError('invalid username or password')
 
@@ -192,7 +192,7 @@ const logic = {
             })
     },
 
-    modifyPostit(id, postitId, text, status) {
+    modifyPostit(id, postitId, text) {
         if (typeof id !== 'string') throw TypeError(`${id} is not a string`)
 
         if (!id.trim().length) throw new ValueError('id is empty or blank')
@@ -216,8 +216,6 @@ const logic = {
                 if (!postit) throw new NotFoundError(`postit with id ${postitId} not found in user with id ${id}`)
 
                 postit.text = text
-                
-                status && (postit.status = status)  //if status exists, then ...
 
                 return user.save()
             })

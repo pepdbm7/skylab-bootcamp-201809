@@ -1,4 +1,3 @@
-const fs = require('fs')
 const uid = require('uuid/v4')
 
 class User {
@@ -14,7 +13,7 @@ class User {
     }
 
     save() {
-        return User._collection.findOne({ id: this.id }) //'findOne' is a Mongo method, to search smt in the DB
+        return User._collection.findOne({ id: this.id })
             .then(user => {
                 if (user) {
                     return User._collection.updateOne({ id: this.id }, { $set: this })
@@ -31,7 +30,7 @@ class User {
     }
 
     static findByUsername(username) {
-        return this._collection.findOne({ username })  
+        return this._collection.findOne({ username })
             .then(user => user ? new User(user) : undefined)
     }
 

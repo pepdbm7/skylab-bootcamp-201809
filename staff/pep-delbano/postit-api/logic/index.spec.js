@@ -1,6 +1,6 @@
 require('dotenv').config()
 
-const { MongoClient } = require('mongodb')
+const mongoose = require('mongoose')
 const { User, Postit } = require('../data')
 const logic = require('.')
 const { AlreadyExistsError } = require('../errors')
@@ -372,5 +372,5 @@ describe('logic', () => {
         })
     })
 
-    after(() => client.close())
+    after(() => mongoose.disconnect())
 })
