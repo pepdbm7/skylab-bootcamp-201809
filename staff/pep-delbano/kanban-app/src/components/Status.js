@@ -7,7 +7,7 @@ const Status = (props) => {
             <article className="columnStatus" onDrop={(e) => props.update(e, props.name)} onDragOver={(e) => e.preventDefault()} >
                 <h1>{props.name}</h1>
 
-                {props.postits}
+                <div className="postits-side">{props.postits}</div> 
                 
             </article>)
 

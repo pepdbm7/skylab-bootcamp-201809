@@ -75,14 +75,13 @@ const logic = {
         if (typeof text !== 'string') throw TypeError(`${text} is not a string`)
 
         if (!text.trim()) throw Error('text is empty or blank')
-
         return fetch(`${this.url}/users/${this._userId}/postits`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json; charset=utf-8',
                 'Authorization': `Bearer ${this._token}`
             },
-            body: JSON.stringify({ text })
+            body: JSON.stringify({ text, status: 'TODO' })
         })
             .then(res => res.json())
             .then(res => {

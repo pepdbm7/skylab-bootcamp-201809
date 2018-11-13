@@ -25,19 +25,21 @@ class Postits extends Component {
 
     // TODO error handling!
 
-    handleRemovePostit = id =>
+    handleRemovePostit = id => {
+        debugger
         logic.removePostit(id)
             .then(() => logic.listPostits())  //una vez borrado el postit, listar todos de nuevo, sin el eliminado
             .then(postits => this.setState({ postits })) //actualizamos state con los cambios de los postits listados
-
+    }
     // TODO error handling!
 
 
-    handleModifyPostit = (id, text, status) => 
+    handleModifyPostit = (id, text, status) => {
+        debugger
         logic.modifyPostit(id, text, status)
             .then(() => logic.listPostits()) //una vez borrado el postit, listar todos de nuevo con los cambios
             .then(postits => this.setState({ postits })) //actualizamos state con los cambios de los postits listados
-
+    }
     // TODO error handling!
 
 
@@ -47,8 +49,8 @@ class Postits extends Component {
         this.setState({ text })
     }
 
-    handleBlur = (id) => {
-        this.handleModifyPostit(id, this.state.text)
+    handleBlur = (id, status) => {
+        this.handleModifyPostit(id, this.state.text, status)
     }
 
     update = (e, name) => {
@@ -72,7 +74,7 @@ class Postits extends Component {
         //le pasamos como parámetro cada postit dl state, y lo preparamos para (1) poder arrastrarlo, (2) poder editarlo y actualizar cambios en state, y (3) añadirle botón delete
         let template = postit => (  
             <article className="post" key={postit.id} draggable onDragStart={(e) => e.dataTransfer.setData("id", postit.id)}>
-                <textarea defaultValue={postit.text} onChange={this.handleChange} onBlur={() => this.handleBlur(postit.id)} />
+                <textarea defaultValue={postit.text} onChange={this.handleChange} onBlur={() => this.handleBlur(postit.id, postit.status)} />
                 <button className="delete-button" onClick={() => this.handleRemovePostit(postit.id)}><i className="far fa-trash-alt"></i></button>
             </article> 
         )
