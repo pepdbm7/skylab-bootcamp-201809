@@ -165,15 +165,15 @@ nav {
     font-family: 'Roboto', sans-serif;
     margin: 10px auto 10px 50px;
     text-shadow: 3px 2px 5px #c7b9b9b6;
+    width: 40%;
 }
 
 .nav-rightSide {
+    display: flex;
+    justify-content: space-evenly;
     font-size: 20px;
     color: white;
-    width: 150px;
-    display: flex;
-    justify-items: space-between;
-    cursor: pointer;
+    min-width: 300px;
 }
 
 
