@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navbar, NavbarBrand, NavbarNav, NavbarToggler, Collapse, NavItem, NavLink, Fa } from 'mdbreact';
+import { Navbar, NavbarBrand, NavbarNav, NavbarToggler, Collapse, NavItem, Fa } from 'mdbreact';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { withRouter } from 'react-router-dom'
 import logic from '../logic'
@@ -33,25 +33,24 @@ class Header extends React.Component {
 }
 
   render() {
-    const bgcolor = {backgroundColor: 'rgb(133, 105, 87)'}
       return(
         <div>
           <Router>
-          <Navbar style={bgcolor} dark expand="md" scrolling fixed="top">
+          <Navbar className="navbar__background" dark expand="md" scrolling fixed="top">
             <NavbarBrand href="/" to ="/">
                 <strong>Planbe</strong>
             </NavbarBrand>
             <NavbarToggler onClick={ this.onClick } />
             <Collapse isOpen = { this.state.collapse } navbar>
               <NavbarNav left>
-                <NavItem active>
+                <NavItem>
                     <a className="nav-link waves-effect waves-light" onClick ={this.goToHome}><Fa icon="home" aria-hidden="true" />Home</a>
                 </NavItem>
                 <NavItem>
                   <a className="nav-link waves-effect waves-light" onClick ={this.goToProfile}><Fa icon="user" />Profile</a>
                 </NavItem>
                 <NavItem>
-                    <a className="nav-link waves-effect waves-light" onClick ={this.goToContact}>Contact</a>
+                    <a className="nav-link waves-effect waves-light" onClick ={this.goToContact}><i className="fas fa-file-signature" /> Contact</a>
                 </NavItem>
               </NavbarNav>
 
@@ -60,7 +59,7 @@ class Header extends React.Component {
                   <a className="nav-link waves-effect waves-light" onClick ={this.goToCart}><Fa icon="shopping-cart" aria-hidden="true" />Shopping Cart</a>
                 </NavItem>
                 <NavItem>
-                    <a className="nav-link waves-effect waves-light" onClick ={this.goToOrders}>Last orders</a>
+                    <a className="nav-link waves-effect waves-light" onClick ={this.goToOrders}><i className="fas fa-history" /> Last orders</a>
                 </NavItem>
                 <NavItem>
                   <a className="nav-link waves-effect waves-light" onClick ={this.handleLogoutClick}><Fa icon="sign-out-alt" />Logout</a>

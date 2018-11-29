@@ -11,25 +11,22 @@ const Order = new Schema({
         type: String,
         required: true
     },
-
     place: {
         type: String,
         required: false,
     },    
-    date: {
-        day:{
-            type: String,
-            required: false,
-        },
-        month:{
-            type: String,
-            required: false,
-        },
-        year:{
-            type: String,
-            required: false,
-        }
+    day:{
+        type: String,
+        required: false,
     },
+    month:{
+        type: String,
+        required: false,
+    },
+    year:{
+        type: String,
+        required: false,
+    },    
     time: {
         type: String,
         required: false

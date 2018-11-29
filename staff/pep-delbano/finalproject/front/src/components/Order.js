@@ -1,23 +1,18 @@
-import React, { Component } from 'react'
+import React from 'react'
+import BoughtProducts from './BoughtProducts'
 
-class Order extends Component {
-    state = { orders: [] }
+const Order = (props) => {
 
-    //TO DO everything!: receive with props from father (cart) the user.orders, to print them
-
-    render() {
-        
-        return <article className="order_container">
-                <h2>Orders</h2>
-                <p className="order_description">{this.props.description}</p> 
-                <p className="order_price">{this.props.price}</p>
-                { this.props.quantity > 1 &&
-                <input className="order-quantity" disabled type="text" placeholder={this.props.quantity} />
-                }
-
-                <button onClick={() => this.props.onAddorder(this.props.id)}><i className="fa fa-plus-circle" aria-hidden="true" /> Add</button>
+        return <article className="order__container">
+                <h2>Your Breakfast on {props.day} {props.month}, {props.year}, at {props.time}</h2>
+                <p className="order__place">Dropped at: {props.place}</p>
+                <div className="productOfOrder__container">
+                {(props.products || []).map(product => {
+                    return <BoughtProducts key={product._id + Math.random()} type={product.type} name={product.name} price={product.price} />
+                })} </div>
+                <p className="order__total">Total paid was: {props.total} €</p>
+                { props.comments && <p className="order__comments">Your comments: {props.comments}</p> }
         </article>
-    }
 }
 
 export default Order

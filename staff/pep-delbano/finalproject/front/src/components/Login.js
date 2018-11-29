@@ -70,11 +70,11 @@ class Login extends Component {
         } 
 
 
-        return <div className="container-login">
-            <h1 className="login-title">Sign In</h1>
-            <form className="form-group form-login" onSubmit={this.handleSubmit}>
+        return <div className="login__container">
+            <h1 className="login__title">Sign In</h1>
+            <form className="form-group login__form" onSubmit={this.handleSubmit}>
                 <div className="form-group">
-                    <input className="form-control" required type="text" placeholder="Username" onChange={this.handleUsernameChange} />
+                    <input className="form-control" required type="text" autofocus="true" placeholder="Username" onChange={this.handleUsernameChange} />
                 </div>
                 <div className="form-group">
                     <input className="form-control" required type="password" placeholder="Password" onChange={this.handlePasswordChange} />

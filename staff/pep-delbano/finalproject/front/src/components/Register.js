@@ -79,11 +79,11 @@ class Register extends Component {
            return null
         } 
 
-        return <div className="container-register">
-            <h1 className="register-title">Sign Up</h1>
-            <form className="form-group form-register" onSubmit={this.handleSubmit}>
+        return <div className="register__container">
+            <h1 className="register__title">Sign Up</h1>
+            <form className="form-group register__form" onSubmit={this.handleSubmit}>
                 <div class="form-group">
-                <select className="form-control" required onChange={this.handleTypeChange}>
+                <select className="form-control" required autofocus="true" onChange={this.handleTypeChange}>
                     <option className="form-control" disabled selected > -- Select Type of Client -- </option>
                     <option className="form-control" value="Individual">Individual</option>
                     <option className="form-control" value="Corporate">Corporate</option>

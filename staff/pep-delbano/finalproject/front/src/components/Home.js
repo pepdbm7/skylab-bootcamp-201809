@@ -11,7 +11,7 @@ class Home extends Component {
 
   componentDidMount() {
     logic.listAllProducts()
-      .then(products => { this.setState({ products }) })
+      .then(products =>this.setState({ products }) )
     // TODO error handling!
   }
 
@@ -30,7 +30,7 @@ class Home extends Component {
       <div>
         <Header />
         <div className="container_home">
-          {this.state.products.map(product => <Product remove={false} key={product._id + Math.random()} id={product._id} name={product.name} image={product.image} price={product.price} description={product.description} onAddProduct={this.handleAddToCart} />)}
+          {this.state.products.map(product => <Product add={true} remove={false} key={product._id + Math.random()} id={product._id} name={product.name} image={product.image} price={product.price} description={product.description} onAddProduct={this.handleAddToCart} />)}
         </div>
       </div>
     )

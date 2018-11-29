@@ -140,7 +140,7 @@ const logic = {
     //     return new Promise((resolve, reject) => {
     //         const pathToFile = path.join(folder, filename)
 
-    //         debugger
+
 
     //         const ws = fs.createWriteStream(pathToFile)
 
@@ -152,7 +152,7 @@ const logic = {
     //                     file.pipe(ws)
 
     //                     file.on('end', () => {
-    //                         debugger
+
 
     //                         ws.close()
 
@@ -160,16 +160,16 @@ const logic = {
     //                     })
 
     //                     file.on('error', err => {
-    //                         debugger
+
     //                     })
     //                 })
     //             else
     //                 fs.readdir(folder, (err, files) => {
-    //                     debugger
+
     //                     if (err) return reject(err)
 
     //                     const deletes = files.map(file => new Promise((resolve, reject) => {
-    //                         debugger
+
     //                         fs.unlink(path.join(folder, file), err => {
     //                             if (err) return reject(err)
 
@@ -308,7 +308,7 @@ const logic = {
 
             
             if (productsArray.length) {
-                const projection = { name: true, price: true, image: true, description: true }
+                const projection = { type: true, name: true, price: true, image: true, description: true }  //ponemos true a los campos q queremos q nos devuelva
                 // const products = await Product.find( {}, projection )
                 const productsToList = Promise.all(productsArray.map(async (productId) => await Product.findById(productId, projection).lean()))
                 return productsToList
@@ -383,7 +383,6 @@ const logic = {
     
     //creamos orden con submit del Cart: (si no se rellenan luego todos los fields, pq cancela, la borraremos)
     createNewOrder (userId, products, total) { 
-        debugger
         validate([
             { key: 'userId', value: userId, type: String },
             { key: 'products', value: products, type: Array },
@@ -396,12 +395,11 @@ const logic = {
             if (!user) throw new NotFoundError(`User with id ${userId} not found`)
 
             const order = new Order({ products: products, total: total })
-            debugger
             user.orders.forEach(_order => {
-                if (_order._id === order._id) throw new AlreadyExistsError(`Order with id ${userId} already exists in user!`)
+                if (_order._id === order._id) throw new AlreadyExistsError(`Order with id ${order._id} already exists in user!`)
             })
-            debugger
-            user.orders.push(order)
+            
+            await user.orders.push(order)
             
             await user.save()
             
@@ -409,8 +407,7 @@ const logic = {
     },
 
     //to add date and place to order (PATCH):
-    addDroppingDetails(id, place, day, month, year, time, comments) {
-        debugger
+    addDroppingDetails(id, place, day, month, year, time, comments, paid) {
         validate([
             { key: 'id', value: id, type: String },
             { key: 'place', value: place, type: String },
@@ -418,7 +415,8 @@ const logic = {
             { key: 'month', value: month, type: String },
             { key: 'year', value: year, type: String },
             { key: 'time', value: time, type: String },
-            { key: 'comments', value: comments, type: String }
+            { key: 'comments', value: comments, type: String },
+            { key: 'paid', value: paid, type: Boolean }
         ])
 
         return (async () => {
@@ -429,59 +427,47 @@ const logic = {
             const userOrders = user.orders
 
             if (userOrders.length) {
-                const pendingOrder = user.orders.find(order => !(order.place.length, order.day.length, order.month.length, order.year.length, order.time.length, order.paid)) //encontramos la order inacabada
                 debugger
+                //encontramos la order inacabada
+                const pendingOrder = userOrders.find(order => !(order.place && order.paid))
+     
 
-                if (pendingOrder.length > 1) throw new AlreadyExistsError(`There are more than one pending order!!`)
+                if (pendingOrder.length > 1) throw new AlreadyExistsError(`There are more than one pending order!!!`)
 
+                //creamos y llenamos los nuevos fields d la orden inacabada:
                 pendingOrder.place = place
                 pendingOrder.day = day
                 pendingOrder.month = month
                 pendingOrder.year = year
                 pendingOrder.time = time
                 pendingOrder.comments = comments
-                debugger
+                pendingOrder.paid = paid
+
+                //vaciamos su carrito:
+                user.basket = []    
 
                 await user.save()
+
             }
         })()
     },
 
     deleteUnfinishedOrders(id) {
-
         validate([
             { key: 'id', value: id, type: String }
         ])
         return (async () => {
             const user = await User.findById(id)
 
-
             if (!user) throw new NotFoundError(`user with id ${id} not found`)
 
-            const userOrders = user.orders
 
-            debugger
+            let ordersArray = user.orders
 
-            if (userOrders.length) {
-                const pendingOrder = userOrders.filter(order => (!order.place || !order.day || !order.month || order.year || order.time && order.paid)) //encontramos la order incompleta y la ELIMINAMOS
-                debugger
-
-                // if (pendingOrder.length > 1) throw new AlreadyExistsError(`There are more than a pending order!!`)
-                
-
-                //TODO TODO TODO !!
-                //una manera:
-                // user.update( { orders: [] }, { $pullAll: { paid: false } } )
-                
-                //otra:
-                // user.update(
-                //     { orders = pendingOrder },
-                //     { "$set": { "orders": [] } }
-                //  )
-
-
-                // pendingOrder.remove()
-
+            if (ordersArray.length) {
+                //buscamos ordenes inacabadas:
+                const pendingOrders = await ordersArray.filter(order => (!order.paid)) //encontramos order(s) incompleta(s) y la(s) ELIMINAMOS
+                await pendingOrders.forEach(x => ordersArray.splice(ordersArray.findIndex(order => !(order.place ||order.day ||order.month ||order.year ||order.comments || order.paid), 1)) )
                 debugger
 
                 await user.save()
@@ -489,49 +475,25 @@ const logic = {
         })()
     },
 
-    //to add date and place to order (PATCH):
-    addStatusPaid(id, orderId, paid) {
+    retrieveOrders(id) {
         validate([
-            { key: 'id', value: id, type: String },
-            { key: 'place', value: place, type: String },
-            { key: 'day', value: day, type: String },
+            { key: 'id', value: id, type: String }
         ])
 
         return (async () => {
-            const user = await User.findById(id)
+            const user = await User.findById(id).populate({ path: 'orders.products' }).lean()
 
             if (!user) throw new NotFoundError(`user with id ${id} not found`)
 
-            const order = await Postit.findOne({ user: user._id, _id: postitId })
-
-            if (!postit) throw new NotFoundError(`postit with id ${postitId} not found`)
-
-            postit.text = text
-
-            await postit.save()
-        })()
-    },
-
-    listOrders(id) {
-        validate([
-            { key: 'id', value: id, type: String }, 
-        ])
-
-        return (async () => {
-            const user = await User.findById(id).lean()
-            if (!user) throw new NotFoundError(`user with id ${id} not found`)
+            debugger
             
-            const userOrders = user.orders
-
+            // await user.save()
             
-            if (userOrders.length) {
-                user.orders.find(order => order.paid = false).remove()  //eliminamos las ordenes inacabadas q pueda haber
+            debugger
 
-                const OrderssToList = Promise.all(user.map(async (_user) => await _user.orders.lean()))
-                return OrderssToList  //solo devolvemos el array con ordenes pagadas
-            } else {
-                return []
-            }
+            const orders = user.orders
+            return orders
+
         })()
     }
 }

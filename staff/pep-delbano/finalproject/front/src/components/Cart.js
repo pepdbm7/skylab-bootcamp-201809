@@ -18,13 +18,12 @@ class Cart extends Component {
           (this.state.products).map(product => {
             sum += product.price
           })
+          sum = sum.toFixed(2)
           this.setState({ total: sum })}
           )
       // TODO error handling!
   }
 
-  
-  
   handleAddMoreToCart = () => {
     //TODO logica para ++ product.quantity
   }
@@ -41,6 +40,7 @@ class Cart extends Component {
             (this.state.products).map(product => {
               sum += product.price
             })
+            sum = sum.toFixed(2)
             this.setState({ total: sum })}
           )
     } catch ({ message }) {
@@ -52,13 +52,13 @@ class Cart extends Component {
   handleClick = () => {
     const { products, total } = this.state
 
-    const productsId = []
-    productsId.push(products.map(_product => _product._id))
+    const productsId = products.map(_product => _product._id)
+    
     const totalstr = total.toString()
 
     try {
       logic.createNewOrder(productsId, totalstr)
-
+      
       //  .then(() => {
          this.props.history.push('/setorder')
         // })
@@ -71,25 +71,40 @@ class Cart extends Component {
 
   render() {
 
-    return (
-      <div>
-        <Header />
-        <div className="container_cart">
+    return ( <div className="cart__page">
+            <Header />
+            <div className="cart__container">
+                { this.state.products.filter(product => product.type === 'sandwich').length &&
+                  <div className="cart__type-container">
+                        <h1 className="cart__type-title-sandwich" >SANCWICHES</h1>
+                        <div className="cart__products-container">{this.state.products.filter(product => product.type === 'sandwich').map(product => <Product add={false} remove={true} key={product._id + Math.random()} id={product._id} name={product.name} image={product.image} price={product.price} description={product.description} quantity={product.quantity} onAddMore={this.handleAddMoreToCart} onDeleteMore={this.handleDeleteMoreFromCart} />)}</div>
+                  </div> }
 
-         {(this.state.products || []).map(product => {
-          return <Product remove={true} key={product._id + Math.random()} id={product._id} name={product.name} image={product.image} price={product.price} description={product.description} quantity={product.quantity} onAddMore={this.handleAddMoreToCart} onDeleteMore={this.handleDeleteMoreFromCart} />
-        })
-      }
+                { this.state.products.filter(product => product.type === 'salad').length &&
+                  <div className="cart__type-container">
+                        <h1 className="cart__type-title-salads" >SALADS</h1>
+                        <div className="cart__products-container">{this.state.products.filter(product => product.type === 'salad').map(product => <Product add={false} remove={true} key={product._id + Math.random()} id={product._id} name={product.name} image={product.image} price={product.price} description={product.description} quantity={product.quantity} onAddMore={this.handleAddMoreToCart} onDeleteMore={this.handleDeleteMoreFromCart} />)}</div>
+                  </div> }
 
-        <Total calculatedTotal={this.state.total}/>
-          
-          
-        </div>
+                { this.state.products.filter(product => product.type === 'yogurt').length &&
+                  <div className="cart__type-container">
+                        <h1 className="cart__type-title-yogurts" >YOGURTS</h1>
+                        <div className="cart__products-container">{this.state.products.filter(product => product.type === 'yogurt').map(product => <Product add={false} remove={true} key={product._id + Math.random()} id={product._id} name={product.name} image={product.image} price={product.price} description={product.description} quantity={product.quantity} onAddMore={this.handleAddMoreToCart} onDeleteMore={this.handleDeleteMoreFromCart} />)}</div>
+                  </div> }
 
-          <button className="btn btn-primary btn-lg" type="submit" onClick={this.handleClick}>NEXT</button>
-      </div>
-    )
-  }
+                  { this.state.products.filter(product => product.type === 'juice').length &&
+                  <div className="cart__type-container">
+                        <h1 className="cart__type-title-juices" >JUICES</h1>
+                        <div className="cart__products-container">{this.state.products.filter(product => product.type === 'juice').map(product => <Product add={false} remove={true} key={product._id + Math.random()} id={product._id} name={product.name} image={product.image} price={product.price} description={product.description} quantity={product.quantity} onAddMore={this.handleAddMoreToCart} onDeleteMore={this.handleDeleteMoreFromCart} />)}</div>
+                  </div> }
+            </div>
+              
+            <div className="cart__footer">
+                { this.state.total !== 0 && <Total calculatedTotal={this.state.total}/> }
+                <button className="btn btn-primary btn-lg cart__submit-button" type="submit" onClick={this.handleClick}>NEXT</button>
+            </div>
+      </div> )
+    }
 }
 
 

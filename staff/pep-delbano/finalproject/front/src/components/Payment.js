@@ -19,7 +19,10 @@ class Payment extends Component {
     //     }
     // }
 
-    onGoBack = () => this.props.history.push('/setorder')
+    onGoBack = () => {
+        logic.listDroppingDetails()   //TODO!!!!!
+        this.props.history.push('/setorder')
+    }
 
 
     handleHolder = () => {
@@ -46,22 +49,6 @@ class Payment extends Component {
         
     }
 
-    onSubmit = () => {
-        const { products } = this.props.products //array con obj d productos, con todos sus fields (quantity, name, etc)
-        const { total } = this.props.total
-        const { place } = this.props.place
-        const { date } = this.props.date
-
-        try {
-            logic.createNewOrder(products, total, place, date)
-            .then(() => {
-                this.setState({ error: null }, () => this.props.history.push('/thanks'))
-            })
-            .catch(err => this.setState({ error: err.message }))
-        } catch (err) {
-            this.setState({ error: err.message })
-        }
-    }
 
 
 
@@ -82,30 +69,30 @@ class Payment extends Component {
                     </div>
                     <div className="form-group">Expiration Date
                         <div className="form-group">
-                            <select className="form-control" required onChange={this.handleMonth}>
+                            <select className="form-control" required onChange={e => this.handleMonth(e)}>
                                 <option className="form-control" disabled selected > mm </option>
-                                <option className="form-control" value="Individual">1</option>
-                                <option className="form-control" value="Individual">2</option>
-                                <option className="form-control" value="Individual">3</option>
-                                <option className="form-control" value="Individual">4</option>
-                                <option className="form-control" value="Individual">5</option>
-                                <option className="form-control" value="Individual">6</option>
-                                <option className="form-control" value="Individual">7</option>
-                                <option className="form-control" value="Individual">8</option>
-                                <option className="form-control" value="Individual">9</option>
-                                <option className="form-control" value="Individual">10</option>
-                                <option className="form-control" value="Individual">11</option>
-                                <option className="form-control" value="Individual">12</option>
+                                <option className="form-control" value="01">01</option>
+                                <option className="form-control" value="02">02</option>
+                                <option className="form-control" value="03">03</option>
+                                <option className="form-control" value="04">04</option>
+                                <option className="form-control" value="05">05</option>
+                                <option className="form-control" value="06">06</option>
+                                <option className="form-control" value="07">07</option>
+                                <option className="form-control" value="08">08</option>
+                                <option className="form-control" value="09">09</option>
+                                <option className="form-control" value="10">10</option>
+                                <option className="form-control" value="11">11</option>
+                                <option className="form-control" value="12">12</option>
                             </select>
                         </div>
                         <div className="form-group">
-                            <select className="form-control" required onChange={this.handleYear}>
+                            <select className="form-control" required onChange={e => this.handleYear(e)}>
                                 <option className="form-control" disabled selected > yyyy </option>
-                                <option className="form-control" value="Individual">2018</option>
-                                <option className="form-control" value="Individual">2019</option>
-                                <option className="form-control" value="Individual">2020</option>
-                                <option className="form-control" value="Individual">2021</option>
-                                <option className="form-control" value="Individual">2022</option>
+                                <option className="form-control" value="2018">2018</option>
+                                <option className="form-control" value="2019">2019</option>
+                                <option className="form-control" value="2020">2020</option>
+                                <option className="form-control" value="2021">2021</option>
+                                <option className="form-control" value="2022">2022</option>
                             </select>
                         </div>
                     </div>

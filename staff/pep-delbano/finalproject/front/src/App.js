@@ -47,59 +47,6 @@ class App extends Component {
         }
     }
 
-    //NEW ORDER
-    //callbacks to Cart, to get back it's products and total values:
-    // sendProducts = (value) => {
-    //     this.setState({
-    //         products: value
-    //     });
-    //     debugger
-    // }
-
-    // sendTotal = (value) => {
-    //     this.setState({
-    //         total: value
-    //     });
-    //     debugger
-    // }
-
-    // //callbacks to setOrder, to get date and place values:
-    // sendPlace = (value) => {
-    //     this.setState({
-    //         place: value
-    //     });
-    //     debugger
-    // }
-
-    // sendDay = (value) => {
-    //     this.setState({
-    //         day: value
-    //     });
-    //     debugger
-    // }
-
-    // sendMonth = (value) => {
-    //     this.setState({
-    //         month: value
-    //     });
-    //     debugger
-    // }
-
-    // sendYear = (value) => {
-    //     this.setState({
-    //         year: value
-    //     });
-    //     debugger
-    // }
-
-    // sendComment = (value) => {
-    //     this.setState({
-    //         comment: value
-    //     });
-    //     debugger
-    // }
-
-
     render() {
 
         return <div className="container-app">

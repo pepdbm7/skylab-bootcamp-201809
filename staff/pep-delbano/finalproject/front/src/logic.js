@@ -213,17 +213,9 @@ const logic = {
     createNewOrder(products, total) {
         if (typeof products !== 'object') throw TypeError(`${products} is not an array`)
         if (typeof total !== 'string') throw TypeError(`${total} is not a string`)
-        // if (typeof place !== 'string') throw TypeError(`${place} is not a string`)
-        // if (typeof day !== 'string') throw TypeError(`${day} is not a string`)
-        // if (typeof month !== 'string') throw TypeError(`${month} is not a string`)
-        // if (typeof year !== 'string') throw TypeError(`${year} is not a string`)
 
         if (!products) throw Error('products is an empty array')
         if (!total.trim()) throw Error('total is empty or blank')
-        // if (!place.trim()) throw Error('place is empty or blank')
-        // if (!day.trim()) throw Error('day is empty or blank')
-        // if (!month.trim()) throw Error('month is empty or blank')
-        // if (!year.trim()) throw Error('year is empty or blank')
 
         return fetch(`${this.url}/cart/${this._userId}`, {
             method: 'POST',
@@ -235,9 +227,8 @@ const logic = {
         })
         .then(res => res.json())
         .then(res => {
-            debugger
-                if (res.error) throw Error(res.error)
-            })
+            if (res.error) throw Error(res.error)
+        })
     },
 
     deleteUnfinishedOrders() {
@@ -255,13 +246,15 @@ const logic = {
     },
 
 
-    addDroppingDetails(place, day, month, year, time, comments) {
+    addDroppingDetails(place, day, month, year, time, comments, paid) {
+
         if (typeof place !== 'string') throw TypeError(`${place} is not a string`)
         if (typeof day !== 'string') throw TypeError(`${day} is not a string`)
         if (typeof month !== 'string') throw TypeError(`${month} is not a string`)
         if (typeof year !== 'string') throw TypeError(`${year} is not a string`)
         if (typeof time !== 'string') throw TypeError(`${time} is not a string`)
         if (comments && typeof comments !== 'string') throw TypeError(`${comments} is not a string`)
+        if (typeof paid !== 'boolean') throw TypeError(`${paid} is not a boolean`)
 
 
         if (!place.trim()) throw Error('place is empty or blank')
@@ -269,14 +262,15 @@ const logic = {
         if (!month.trim()) throw Error('month is empty or blank')
         if (!year.trim()) throw Error('year is empty or blank')
         if (!time.trim()) throw Error('time is empty or blank')
+        if (!paid) throw Error('paid is not true!')
 
-        
-        return fetch(`${this.url}/setorder/${this._userId}/`, {
+        return fetch(`${this.url}/setorder/${this._userId}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json; charset=utf-8',
                 'Authorization': `Bearer ${this._token}`
-            }
+            },
+            body: JSON.stringify({ place, day, month, year, time, comments, paid })
         })
             .then(res => res.json())
             .then(res => {
@@ -284,9 +278,30 @@ const logic = {
             })
     },
 
+    // retrieveDroppingDetails() {
+    //     let id = this._userId
+    //     debugger
+    //     if (typeof id !== 'string') throw new TypeError(`${id} is not a string`)
+    //     if (!id.trim().length) throw Error('id is empty or blank')
+
+    //     return fetch(`${this.url}/vieworders/${this._userId}`, {
+    //         method: 'GET',
+    //         headers: {
+    //             'Content-Type': 'application/json; charset=utf-8',
+    //             'Authorization': `Bearer ${this._token}`
+    //         }
+    //     })
+    //         .then(res => res.json())
+    //         .then(res => {
+    //             if (res.error) throw Error(res.error)
+                
+    //             return res.data
+    //         })
+    // },
+
     retrieveOrders() {
         let id = this._userId
-        debugger
+
         if (typeof id !== 'string') throw new TypeError(`${id} is not a string`)
         if (!id.trim().length) throw Error('id is empty or blank')
 
@@ -300,7 +315,6 @@ const logic = {
             .then(res => res.json())
             .then(res => {
                 if (res.error) throw Error(res.error)
-                
                 return res.data
             })
     }

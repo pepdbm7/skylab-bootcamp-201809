@@ -109,7 +109,6 @@ router.patch('/cart/:id/product/:productId', [bearerTokenParser, jwtVerifier, js
         const { sub, params: { id, productId } } = req
         
         if (id !== sub) throw Error('token sub does not match user id')
-        debugger
 
         return logic.addProductToUserCart(id, productId)
             .then(() => res.json({
@@ -172,12 +171,12 @@ router.delete('/cart/product/:productId', [bearerTokenParser, jwtVerifier, jsonB
 router.post('/cart/:id',  [bearerTokenParser, jwtVerifier, jsonBodyParser], (req, res) => {
     routeHandler(() => {
         const { params: { id }, sub, body: { products, total } } = req
-        debugger
+     
         if (id !== sub) throw Error('token sub does not match user id')
 
         return logic.createNewOrder(id, products, total)
         .then(() => {
-            debugger
+          
                 res.status(201)
                 res.json({
                     message: `Order successfully created`
@@ -192,7 +191,7 @@ router.delete('/setorder/:id', [bearerTokenParser, jwtVerifier, jsonBodyParser],
         const { sub, params: { id } } = req
 
         if (!sub) throw Error('invalid user or token')
-
+    
         return logic.deleteUnfinishedOrders(id)
             .then(() => res.json({
                 message: 'Unfinished orders have been removed!'
@@ -200,18 +199,16 @@ router.delete('/setorder/:id', [bearerTokenParser, jwtVerifier, jsonBodyParser],
     }, res)
 })
 
-//to add date and place to unfinished order (PATCH):
+//to add dropping details to order (PATCH):
 router.patch('/setorder/:id', [bearerTokenParser, jwtVerifier, jsonBodyParser], (req, res) => {
-
     routeHandler(() => {
-        const { sub, params: { id }, body: { place, day, month, year, time, comments } } = req
+        const { sub, params: { id }, body: { place, day, month, year, time, comments, paid } } = req
         
         if (id !== sub) throw Error('token sub does not match user id')
-        debugger
 
-        return logic.addDroppingDetails(id, place, day, month, year, time, comments)
+        return logic.addDroppingDetails(id, place, day, month, year, time, comments, paid)
             .then(() => res.json({
-                message: 'Order successfully edited: added place, day and time'
+                message: 'Order successfully completed!'
             })
         )
 
@@ -225,12 +222,12 @@ router.get('/vieworders/:id', [bearerTokenParser, jwtVerifier], (req, res) => {
 
         if (id !== sub) throw Error('token sub does not match user id')
 
-        return logic.listOrders(id)
-            .then(orders => res.json({
-                data: orders
-            }))
+        return logic.retrieveOrders(id)
+        .then(orders => res.json({
+            data: orders
+        }))
     }, res)
-}),
+})
 
 //to get current order to get its _id:
 // router.get('/setorder/:id', [bearerTokenParser, jwtVerifier], (req, res) => {
