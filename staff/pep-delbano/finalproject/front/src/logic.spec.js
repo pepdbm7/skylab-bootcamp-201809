@@ -1,4 +1,6 @@
-//import logic from './logic'
+const { mongoose, models: { Product, Order, User } } = require('planbe-data')
+
+//          ...\front> mocha src/logic.spec.js
 
 require('isomorphic-fetch')
 

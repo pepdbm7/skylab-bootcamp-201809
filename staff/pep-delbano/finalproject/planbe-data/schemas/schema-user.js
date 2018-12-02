@@ -1,5 +1,6 @@
 const { Schema, SchemaTypes:{ObjectId} } = require('mongoose')
-const Order = require('../order/schema')
+const Order = require('../schemas/schema-order')
+const ContactForm = require('../schemas/schema-contactform')
 
 
 const User = new Schema({
@@ -15,6 +16,11 @@ const User = new Schema({
         type: String,
         required: true
     },
+    email:{
+        type: String,
+        required: true,
+        unique: true
+    },
     username: {
         type: String,
         required: true,
@@ -28,7 +34,9 @@ const User = new Schema({
         type: ObjectId,
         ref: 'Product'
     }],
-    orders: [Order]
+    orders: [Order],
+    contactForms: [ContactForm]
+
     
 })
 

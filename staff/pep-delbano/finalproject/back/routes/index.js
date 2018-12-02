@@ -19,12 +19,11 @@ const { env: { JWT_SECRET } } = process
 //to add a new registered user to DB:
 router.post('/users', jsonBodyParser, (req, res) => {
     routeHandler(() => {
-        const { type, name, surname, username, password } = req.body
-
-        return logic.registerUser(type, name, surname, username, password)
-            .then(() => {
-                res.status(201)
-
+        const { type, name, surname, email, username, password } = req.body
+        return logic.registerUser(type, name, surname, email, username, password)
+        .then(()=> logic.sendConfirmationRegistration(name, email))
+        .then(() => {
+            res.status(201)
                 res.json({
                     message: `${username} successfully registered`
                 })
@@ -68,13 +67,14 @@ router.get('/users/:id', [bearerTokenParser, jwtVerifier], (req, res) => {
 })
 
 //to update user's account:
-router.put('/users/:id', [bearerTokenParser, jwtVerifier, jsonBodyParser], (req, res) => {
+router.patch('/update/:id', [bearerTokenParser, jwtVerifier, jsonBodyParser], (req, res) => {
     routeHandler(() => {
-        const { params: { id }, sub, body: { type, name, surname, username, newPassword, password } } = req
+        const { params: { id }, sub, body: { type, name, surname, email, username, newPassword, password } } = req
 
         if (id !== sub) throw Error('token sub does not match user id')
 
-        return logic.updateUser(id, type, name ? name : null, surname ? surname : null, username ? username : null, newPassword ? newPassword : null, password)
+        return logic.updateUser(id, type, name, surname, email, username, newPassword, password)
+        .then(() => logic.sendAccountUpdated(name, email, username, newPassword))
         .then(() =>
         res.json({
             message: 'user updated!'
@@ -83,6 +83,25 @@ router.put('/users/:id', [bearerTokenParser, jwtVerifier, jsonBodyParser], (req,
     }, res)
 })
 
+
+
+// CONTACT FORM:
+router.patch('/contact/:id', [bearerTokenParser, jwtVerifier, jsonBodyParser], (req, res) => {
+
+    routeHandler(() => {
+        const { sub, params: { subject, textarea } } = req
+        
+        if (id !== sub) throw Error('token sub does not match user id')
+
+        return logic.saveContactForm(id, subject, textarea)
+            .then(() => logic.sendContactForm(id, subject, textarea))
+            .then(() => res.json({
+                message: 'Your message is sent to the Planbe team!'
+            })
+        )
+
+    }, res)
+})
 
 
 //HOME PRODUCTS:
@@ -119,6 +138,22 @@ router.patch('/cart/:id/product/:productId', [bearerTokenParser, jwtVerifier, js
     }, res)
 })
 
+router.patch('/cart/:id/more/:productId', [bearerTokenParser, jwtVerifier, jsonBodyParser], (req, res) => {
+
+    routeHandler(() => {
+        const { sub, params: { id, productId } } = req
+        
+        if (id !== sub) throw Error('token sub does not match user id')
+
+        return logic.addMore(id, productId)
+            .then(() => res.json({
+                message: 'product added to user.s basket'
+            })
+        )
+
+    }, res)
+})
+
 //Retrieve user's basket's products to list them in Cart:
 router.get('/cart/:id', [bearerTokenParser, jwtVerifier], (req, res) => {
     routeHandler(() => {
@@ -147,21 +182,6 @@ router.delete('/cart/product/:productId', [bearerTokenParser, jwtVerifier, jsonB
             }))
     }, res)
 })
-
-
-//edit a product's Quantity:   (2nd SPRINT)
-// router.put('/users/:id/product/:productId', [bearerTokenParser, jwtVerifier, jsonBodyParser], (req, res) => {
-//     routeHandler(() => {
-//         const { sub, params: { id, productId }, body: { quantity } } = req
-
-//         if (id !== sub) throw Error('token sub does not match user id')
-
-//         return logic.editQuantity(id, productId, quantity)
-//             .then(() => res.json({
-//                 message: 'product quantity modified'
-//             }))
-//     }, res)
-// })
 
 
 
@@ -205,7 +225,7 @@ router.patch('/setorder/:id', [bearerTokenParser, jwtVerifier, jsonBodyParser], 
         const { sub, params: { id }, body: { place, day, month, year, time, comments, paid } } = req
         
         if (id !== sub) throw Error('token sub does not match user id')
-
+        
         return logic.addDroppingDetails(id, place, day, month, year, time, comments, paid)
             .then(() => res.json({
                 message: 'Order successfully completed!'

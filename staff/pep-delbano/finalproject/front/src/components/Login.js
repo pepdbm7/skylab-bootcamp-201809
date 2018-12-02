@@ -60,9 +60,6 @@ class Login extends Component {
     render() {
 
         let error = () => {
-            // if (this.state.successMessage) {
-            //     return (<p className="correct">{this.state.successMessage}</p>)
-            // }
             if (this.state.errorMessage) {
                 return (<p className="error">{this.state.errorMessage}</p>)
             }
@@ -76,6 +73,7 @@ class Login extends Component {
                 <div className="form-group">
                     <input className="form-control" required type="text" autofocus="true" placeholder="Username" onChange={this.handleUsernameChange} />
                 </div>
+                
                 <div className="form-group">
                     <input className="form-control" required type="password" placeholder="Password" onChange={this.handlePasswordChange} />
                 </div>

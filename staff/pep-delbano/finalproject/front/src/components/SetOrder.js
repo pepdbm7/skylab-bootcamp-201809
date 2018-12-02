@@ -2,13 +2,14 @@ import React, { Component } from 'react'
 import { withRouter } from 'react-router-dom'
 import logic from '../logic'
 import Error from './Error'
+import Popup from './Popup'
 
 
 
 
 class SetOrder extends Component {
 
-    state = { errorMessage: null, place: '', day:'', month:'', year:'', time: '', comments:'', holder: '', num: '', exmonth:'', exyear:'', cvc:'', paid: false, detailsActive: true }
+    state = { errorMessage: null, place: '', day:'', month:'', year:'', time: '', comments:'', holder: '', num: '', exmonth:'', exyear:'', cvc:'', paid: false, detailsActive: true, detailsCard: false, show: false }
 
 
     onGoBack = () => {
@@ -16,9 +17,10 @@ class SetOrder extends Component {
             .then(() => this.props.history.push('/cart'))
     }
 
-    onGoBackToDetails = (event) => {
+    onGoBackToDetails = event => {
         event.preventDefault()
         this.setState({ detailsActive: true })
+        this.setState({ detailsCard: false })
     }
 
     
@@ -52,6 +54,8 @@ class SetOrder extends Component {
         this.setState({ comments: comment })
     }
 
+
+    // we DON'T save credit card details!!:
     handleHolder = event => {
         const holder = event.target.value
         this.setState({ holder: holder })
@@ -78,16 +82,15 @@ class SetOrder extends Component {
     }
 
 
-    onDetailsSubmit = (event) => {
+    onDetailsSubmit = () => {  //go to 2nd form:
         if (!this.state.place || !this.state.day || !this.state.month || !this.state.year || !this.state.time) {
             this.setState({ errorMessage: 'Error: Some required fields still empty!' })
         } else {
-            this.setState({ errorMessage: null })
-            this.setState({ detailsActive: false })
+            this.setState({ errorMessage: null, detailsActive: false, detailsCard: true })
         }
     }
 
-    onPaySubmit = (event) => {
+    onPaySubmit = () => {  //paid!, modal and vieworders:
         if (!this.state.holder || !this.state.num || !this.state.exmonth || !this.state.exyear || !this.state.cvc) {
             this.setState({ errorMessage: 'Error: Some required fields still empty!' })
         } else {
@@ -97,14 +100,18 @@ class SetOrder extends Component {
                 paid = true
                 
                 logic.addDroppingDetails(place, day, month, year, time, comments, paid)
-                .then(() => {
-                    this.setState({ errorMessage: null }, () => this.props.history.push('/thanks'))
-                })
+                    .then(() => this.setState({detailsActive: false, detailsCard: true, show: true}))
+                
             } catch ({ message }) {
 
                 alert(message)
             }
         }
+    }
+
+    closePopup = () => {
+        this.setState({ show: false }, () => this.props.history.push('/vieworders'))
+        
     }
 
     render() {
@@ -207,7 +214,7 @@ class SetOrder extends Component {
             </div>
 
 
-            <div className= { `${ this.state.detailsActive ? "payDisabled" : "payActive" }` } >
+            <div className= { `${ this.state.detailsCard ? "payActive" : "payDisabled" }` } >
                 <h1 className="payment__title">Payment</h1>
                 <form className="form-group payment__form" onSubmit={this.onPaySubmit}>
 
@@ -259,18 +266,9 @@ class SetOrder extends Component {
                 </form>
             </div>
 
-
-            {/* Modalbox
-            <div class="container">
-                    <div class="row">
-                        <div class="modalbox success col-sm-8 col-md-6 col-lg-5 center animate">
-                            <div class="icon"><span class="glyphicon glyphicon-ok"></span></div>
-                            <h1>ORDER DONE</h1>
-                            <p>Thank You!!</p>
-                            <button type="button" class="redo btn">Ok</button>
-                        </div>
-                    </div>
-            </div> */}
+            { this.state.show &&
+                <Popup place = {this.state.place} day = {this.state.day} month = {this.state.month} year = {this.state.year} time = {this.state.time} onClick={this.closePopup}/> }
+          
     </div>
     }
 }

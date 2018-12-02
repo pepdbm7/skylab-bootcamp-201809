@@ -6,12 +6,12 @@ import Header from './Header'
 
 
 class Profile extends Component {
-    state = { type: '', name: '', surname: '', username: '', error: null }
+    state = { type: '', name: '', surname: '', email: '', username: '', error: null }
 
     componentDidMount() {
         try {
             logic.retrieveUser()
-            .then(user => { this.setState({ type: user.type, name: user.name, surname: user.surname, username: user.username }) })
+            .then(user => { this.setState({ type: user.type, name: user.name, surname: user.surname, email: user.email, username: user.username }) })
             .catch(err => this.setState({ error: err.message }))
         } catch (err) {
             this.setState({ error: err.message })
@@ -24,29 +24,34 @@ class Profile extends Component {
 
     render() {
         return <div>
-            <Header/>
-            <div className="container-profile">
-                <h1 className="profile-title">Profile</h1>
-                <form className="form-group form-profile">
+            <Header home={false} profile={true} contact={false} cart={false} vieworders={false}/>
+            <div className="profile__container">
+                <h1 className="profile__title">Profile</h1>
+                <form className="form-group profile__form">
 
                     <div className="form-group">
                         <label>Type of client</label>
-                        <input className="form-control profile" disabled  type="text" placeholder={this.state.type} />
+                        <input className="form-control profile__form-field" disabled  type="text" placeholder={this.state.type} />
                     </div>
 
                     <div className="form-group">
                         <label>Name</label>
-                        <input className="form-control profile" disabled  type="text" placeholder={this.state.name} />
+                        <input className="form-control profile__form-field" disabled  type="text" placeholder={this.state.name} />
                     </div>
 
                     <div className="form-group">
                         <label>Surname</label>
-                        <input className="form-control profile" disabled type="text" placeholder={this.state.surname} />
+                        <input className="form-control profile__form-field" disabled type="text" placeholder={this.state.surname} />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Email</label>
+                        <input className="form-control profile__form-field" disabled type="text" placeholder={this.state.email} />
                     </div>
 
                     <div className="form-group">
                         <label>Username</label>
-                        <input className="form-control profile" disabled type="text" placeholder={this.state.username} />
+                        <input className="form-control profile__form-field" disabled type="text" placeholder={this.state.username} />
                     </div>
 
                 </form>

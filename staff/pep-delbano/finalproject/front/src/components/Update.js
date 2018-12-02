@@ -1,10 +1,10 @@
 import React, {Component} from 'react'
 import { withRouter } from 'react-router-dom'
 import Header from './Header'
-// import logic from '../logic'
+import logic from '../logic'
 
 class Update extends Component {
-    state = { type: '', name: '', surname: '', username: '', newPassword: '', password: '' }
+    state = { errorMessage: null, successMessage: null, type: '', name: '', surname: '', email:'', username: '', newPassword: '', confirmPassword: '', password: '' }
 
     handleTypeChange = event => {
         const type = event.target.value
@@ -30,10 +30,22 @@ class Update extends Component {
         this.setState({ username })
     }
 
+    handleEmailChange = event => {
+        const email = event.target.value
+
+        this.setState({ email })
+    }
+
     handleNewPasswordChange = event => {
         const newPassword = event.target.value
 
         this.setState({ newPassword })
+    }
+
+    handleConfirmPasswordChange = event => {
+        const confirmPassword = event.target.value
+
+        this.setState({ confirmPassword })
     }
 
     handlePasswordChange = event => {
@@ -45,28 +57,59 @@ class Update extends Component {
     handleSubmit = (event) => {
         event.preventDefault()
 
-        const { name, surname, username, newPassword, password } = this.state
-
-        this.props.onUpdate(name, surname, username, newPassword, password)
-
-        // logic.sendUpdatedInfo(name, surname, username, newPassword, password)
-
+        const { type, name, surname, email, username, newPassword, confirmPassword, password } = this.state
+        try {
+            logic.sendUpdatedInfo( type, name, surname, email, username, newPassword, confirmPassword, password )
+                .then(() => {
+                    this.setState({ registerDoneMessage: 'Great! Account updated!!' })
+                    setTimeout(() => {
+                        this.setState({successMessage: null})
+                        this.props.history.push('/profile')
+                                     
+                    }, 2500) 
+                })
+                .catch((err) => {
+                    this.setState({ errorMessage: err.message }, () =>{
+                        debugger
+                        setTimeout(() => {
+                            this.setState({errorMessage: null})                
+                        }, 3000)
+                    })
+                })
+        } catch(err) {
+            this.setState({ errorMessage: err.message }, () =>{
+                debugger
+                setTimeout(() => {
+                    this.setState({errorMessage: null})                
+                }, 3000)
+            })
+        }
 
     }
 
     onGoBack = () => this.props.history.push('/profile')
 
     render() {
+
+        let error = () => {
+            if (this.state.successMessage) {
+                return (<p className="correct">{this.state.successMessage}</p>)
+            } else if (this.state.errorMessage) {
+                return (<p className="error">{this.state.errorMessage}</p>)
+            }
+           return null
+        } 
+
         return <div>
         <Header/> 
-            <div className="container-update">
-                <h1 className="update-title">Update Profile</h1>
-                <form className="form-group form-update" onSubmit={this.handleSubmit}>
+            <div className="update__container">
+                <h1 className="update__title">Update Profile</h1>
+                <form className="form-group update__form" onSubmit={this.handleSubmit}>
                     <div class="form-group">
-                        <select className="form-control" required onChange={this.handleTypeChange}>
-                            <option className="form-control" disabled selected > -- Select Type of Client -- </option>
-                            <option className="form-control" value="Individual">Individual</option>
-                            <option className="form-control" value="Corporate">Corporate</option>
+                        <select className="form-control update__type" required onChange={this.handleTypeChange}>
+                            <option className="form-control update__type" disabled selected > -- Select Type of Client -- </option>
+                            <option className="form-control update__type" value="Individual">Individual</option>
+                            <option className="form-control update__type" value="Corporate">Corporate</option>
                         </select>
                     </div>
                     <div className="form-group">
@@ -79,16 +122,24 @@ class Update extends Component {
                         <input className="form-control" required type="text" placeholder="Username" onChange={this.handleUsernameChange} />
                     </div>
                     <div className="form-group">
-                        <input className="form-control" required type="password" placeholder="Current Password" onChange={this.handlePasswordChange} />
+                        <input className="form-control" required type="text" placeholder="Email" onChange={this.handleEmailChange} />
                     </div>
                     <div className="form-group">
-                        <input className="form-control" required type="password" placeholder="New Password Desired" onChange={this.handleNewPasswordChange} />
+                    <input className="form-control" required type="password" placeholder="New Password" onChange={this.handleNewPasswordChange} />
+                    </div>
+                    <div className="form-group">
+                        <input className="form-control" required type="password" placeholder="Confirm Password" onChange={this.handleConfirmPasswordChange} />
+                    </div>
+                    <div className="form-group">
+                        <input className="form-control" required type="password" placeholder="Old Password" onChange={this.handlePasswordChange} />
                     </div>
                     {/* <button type="submit">update</button> <a href="/#/">back</a> */}
                     <div className="form-group">
                         <button className="btn btn-primary btn-lg" type="submit">Update</button> 
+                        <button className="btn-register btn btn-link" href="#" onClick={this.onGoBack}>Go Back</button>
                     </div>
-                <button className="btn-register btn btn-link" href="#" onClick={this.onGoBack}>Go Back</button>
+                    
+                    {error()}
                 </form>
             </div>
         </div>

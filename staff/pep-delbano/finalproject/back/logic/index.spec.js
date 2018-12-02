@@ -1,7 +1,7 @@
-const mongoose = require('mongoose')
-const { User } = require('../data/user/index')
-const { Product } = require('../data/product/index')
-const { Order } = require('../data/order')
+const { mongoose, models: { Product, Order, User } } = require('planbe-data')
+
+//      ..\back> mocha logic/index.spec.js
+
 const logic = require('.')
 const { AlreadyExistsError, ValueError } = require('../errors')
 // const fs = require('fs-extra')

@@ -1,7 +1,6 @@
 import React from 'react'
-import {TransitionGroup, CSSTransition} from 'react-transition-group'
 
-const Total = (props) => {  //it just prints its father's state.total:
+const Total = props => {  //it just prints its father's state.total:
     // debugger
 
     return <article className="total__container">

@@ -20,17 +20,39 @@ class Home extends Component {
     try {
       logic.addProductToCart(id)
     } catch ({ message }) {
-      alert(message) // HORROR! FORBIDDEN! ACHTUNG!
+      console.log(message)
     }
   }
 
   render() {
     //le pasamos al hijo Product por props los fields q necesitará imprimir dl objeto q tenemos en l state
     return (
-      <div>
-        <Header />
-        <div className="container_home">
-          {this.state.products.map(product => <Product add={true} remove={false} key={product._id + Math.random()} id={product._id} name={product.name} image={product.image} price={product.price} description={product.description} onAddProduct={this.handleAddToCart} />)}
+      <div className="home__page">
+        <Header home={true} profile={false} contact={false} cart={false} vieworders={false} />
+        <div className="home__container">
+          <h1 className="home__title">OUR PRODUCTS</h1>
+          <hr className="home__line"/>
+          <section className="home__products-container">
+                      <div className="home__type-container">
+                            <h1 className="home__type-title-sandwich" >SANDWICHES</h1>
+                            <div className="home__products-container">{this.state.products.filter(product => product.type === 'sandwich').map(product => <Product addFromHome={true} remove={false} addMore={false} id={product.id} name={product.name} image={product.image} price={product.price} description={product.description} addFromHome={this.handleAddToCart} />)}</div>
+                      </div>
+
+                      <div className="home__type-container">
+                            <h1 className="home__type-title-salads" >SALADS</h1>
+                            <div className="home__products-container">{this.state.products.filter(product => product.type === 'salad').map(product => <Product addFromHome={true} remove={false} addMore={false} id={product.id} name={product.name} image={product.image} price={product.price} description={product.description} addFromHome={this.handleAddToCart} />)}</div>
+                      </div>
+
+                      <div className="home__type-container">
+                            <h1 className="home__type-title-juices" >JUICES</h1>
+                            <div className="home__products-container">{this.state.products.filter(product => product.type === 'juice').map(product => <Product addFromHome={true} remove={false} addMore={false} id={product.id} name={product.name} image={product.image} price={product.price} description={product.description} addFromHome={this.handleAddToCart} />)}</div>
+                      </div>
+
+                      <div className="home__type-container">
+                            <h1 className="home__type-title-yogurts" >YOGURTS</h1>
+                            <div className="home__products-container">{this.state.products.filter(product => product.type === 'yogurt').map(product => <Product addFromHome={true} remove={false} addMore={false} id={product.id} name={product.name} image={product.image} price={product.price} description={product.description} addFromHome={this.handleAddToCart} />)}</div>
+                      </div>
+          </section>
         </div>
       </div>
     )

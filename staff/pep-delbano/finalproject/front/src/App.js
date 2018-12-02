@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import Register from './components/Register'
 import Login from './components/Login'
 import Home from './components/Home'
-// import Error from './components/Error'
 import Landing from './components/Landing'
 import Profile from './components/Profile'
 import Update from './components/Update'
@@ -11,7 +10,6 @@ import Cart from './components/Cart'
 import SetOrder from './components/SetOrder'
 import Payment from './components/Payment'
 import ViewOrders from './components/ViewOrders'
-import Thanks from './components/Thanks'
 
 
 import logic from './logic'
@@ -21,7 +19,7 @@ logic.url = 'http://localhost:5000/api'
 
 class App extends Component {
 
-    state = { error: null, products: [], total: '', place: '', day: '', month:'', year:'', comment: '' }  //tras pulsar PAY, enviamos todo el state a la api, creando y guardando un nuevo Order en Mongo con un POST
+    state = { products: [], total: '', place: '', day: '', month:'', year:'', comment: '' }  //tras pulsar PAY, enviamos todo el state a la api, creando y guardando un nuevo Order en Mongo con un POST
 
     //REDIRECT:
     handleRegisterClick = () => this.props.history.push('/register') 
@@ -69,8 +67,6 @@ class App extends Component {
             <Route path="/setorder" render={() => logic.loggedIn ? <SetOrder sendPlaceToApp={this.sendPlace} sendDayToApp={this.sendDay} sendMonthToApp={this.sendMonth} sendYearToApp={this.sendYear} sendCommentToApp={this.sendComment}/> : <Redirect to="/" />} />
             
             <Route path="/payment" render={() => logic.loggedIn ? <Payment products={this.state.products} total={this.state.total} place={this.state.place} date={this.state.date}/> : <Redirect to="/" />} />
-
-            <Route path="/thanks" render={() => logic.loggedIn ? <Thanks /> : <Redirect to="/" />} />
 
         </div>
     }

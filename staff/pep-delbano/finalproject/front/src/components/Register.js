@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
+import { withRouter } from 'react-router-dom'
+
 import logic from '../logic'
 
 class Register extends Component {
-    state = { registerDoneMessage: null, registerErrorMessage: null, type: '', name: '', surname: '', username: '', password: '' }
+    state = { registerDoneMessage: null, registerErrorMessage: null, type: '', name: '', surname: '', email: '', username: '', password: '' }
 
     handleTypeChange = event => {
         const type = event.target.value
@@ -22,6 +24,12 @@ class Register extends Component {
         this.setState({ surname })
     }
 
+    handleEmailChange = event => {
+        const email = event.target.value
+
+        this.setState({ email })
+    }
+
     handleUsernameChange = event => {
         const username = event.target.value
 
@@ -37,15 +45,16 @@ class Register extends Component {
     handleSubmit = event => {
         event.preventDefault()
 
-        const { type, name, surname, username, password } = this.state
+        const { type, name, surname, email, username, password } = this.state
 
         try {
-            logic.registerUser(type, name, surname, username, password)
+            logic.registerUser(type, name, surname, email, username, password)
             .then(()=> {
             
-                this.setState({ registerDoneMessage: `Great! ' ${username} ' successfully registered`, name: '', surname: '', username: '', password: '' }, () => {
+                this.setState({ registerDoneMessage: `Great! ' ${username} ' successfully registered`, name: '', surname: '', email: '', username: '', password: '' }, () => {
                         setTimeout(() => {
-                            this.setState({registerDoneMessage: null})                
+                            this.setState({registerDoneMessage: null})
+                            this.props.history.push('/login')                
                         }, 3000)
                     })       
             })
@@ -69,7 +78,6 @@ class Register extends Component {
     render() {
 
         let error = () => {
-            console.log(this.state.registerDoneMessage)
             if (this.state.registerDoneMessage) {
                 return (<p className="correct">{this.state.registerDoneMessage}</p>)
             }
@@ -83,10 +91,10 @@ class Register extends Component {
             <h1 className="register__title">Sign Up</h1>
             <form className="form-group register__form" onSubmit={this.handleSubmit}>
                 <div class="form-group">
-                <select className="form-control" required autofocus="true" onChange={this.handleTypeChange}>
-                    <option className="form-control" disabled selected > -- Select Type of Client -- </option>
-                    <option className="form-control" value="Individual">Individual</option>
-                    <option className="form-control" value="Corporate">Corporate</option>
+                <select className="form-control register__type" required autofocus="true" onChange={this.handleTypeChange}>
+                    <option className="form-control register__type" disabled selected > -- Select Type of Client -- </option>
+                    <option className="form-control register__type" value="Individual">Individual</option>
+                    <option className="form-control register__type" value="Corporate">Corporate</option>
                 </select>
                 </div>
                 <div className="form-group">
@@ -94,6 +102,9 @@ class Register extends Component {
                 </div>
                 <div className="form-group">
                     <input className="form-control" required type="text" value={this.state.surname} placeholder="Surname" onChange={this.handleSurnameChange} />
+                </div>
+                <div className="form-group">
+                    <input className="form-control" required type="text" value={this.state.email} placeholder="Email" onChange={this.handleEmailChange} />
                 </div>
                 <div className="form-group">
                     <input className="form-control" required type="text" value={this.state.username} placeholder="Username" onChange={this.handleUsernameChange} />
@@ -110,4 +121,4 @@ class Register extends Component {
     }
 }
 
-export default Register
+export default withRouter(Register)

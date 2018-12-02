@@ -1,36 +1,91 @@
 import React, { Component } from 'react'
 import { withRouter } from 'react-router-dom';
-// import logic from '../logic'
+import logic from '../logic'
 import Header from './Header'
 
 // import logic from '../logic'
 
 class Contact extends Component {
-    state = { error: null }
+    state = { successMessage: null, errorMessage: null, subject: '', textarea: '' }
 
+    handleSubject = event => {
+        const subject = event.target.value
+
+        this.setState({ subject })        
+    }
+    
+    handleTextarea = event => {
+        const textarea = event.target.value
+
+        this.setState({ textarea })
+    }
+    
+    handleSubmit = event => {
+        event.preventDefault()
+
+        const { subject, textarea } = this.state
+
+        try {
+            logic.sendContactForm(subject, textarea)
+            .then(()=> {
+                debugger
+                this.setState({ successMessage: 'Great!! We will answer you ASAP to your email!', subject: '', textarea: '' }, () => {
+                        setTimeout(() => {
+                            this.setState({successMessage: null})               
+                        }, 3000)
+                    })       
+            })
+            .catch((err) => {
+                debugger
+                this.setState({ errorMessage: err.message }, () =>{
+                    setTimeout(() => {
+                        this.setState({errorMessage: null})                
+                    }, 3000)
+                })
+            })
+        } catch(err) {
+            debugger
+            this.setState({ errorMessage: err.message }, () =>{
+                setTimeout(() => {
+                    this.setState({errorMessage: null})                
+                }, 3000)
+            })
+        }
+        
+    }
 
     render() {
 
-        return ( <div>
-            <Header/>
+        let error = () => {
+            if (this.state.successMessage) {
+                return (<p className="correct">{this.state.successMessage}</p>)
+            }
+            else if (this.state.errorMessage) {
+                return (<p className="error">{this.state.errorMessage}</p>)
+            }
+           return null
+        } 
+
+        return ( <div className="contact__page">
+            <Header home={false} profile={false} contact={true} cart={false} vieworders={false} />
             <div className="contact__container">
                 <h1 className="contact__title">Contact</h1>
             <form className="form-group contact__form" onSubmit={this.handleSubmit}>
 
                     <div className="form-group">
                         <label>SUBJECT</label>
-                        <input className="form-control"  type="text" required autofocus="true" placeholder="Email subject" />
+                        <input className="form-control"  type="text" required autofocus="true" placeholder="Email subject" onChange={this.handleSubject} />
                     </div>
 
                     <div className="form-group">
                         <label>MESSAGE</label>
-                        <textarea className="form-control contact__textarea" type="text" required placeholder="Type your message here..." onChange={this.handleTextareaChange} />
+                        <textarea className="form-control contact__textarea" type="text" required placeholder="Type your message here..." onChange={this.handleTextarea} />
                     </div>
                 
                 <div className="form-group">
                     <button className="btn btn-primary btn-lg"type="submit">Send</button>
-                    {/* <button className="btn-contact btn btn-link" href="#" onClick={this.props.onGoBack}>Go Back</button> */}
                 </div>
+                {error()}
             </form>
 
             <section className="contact__section2">
