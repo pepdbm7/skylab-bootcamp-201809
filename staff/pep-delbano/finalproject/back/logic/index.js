@@ -314,6 +314,7 @@ const logic = {
         ])
 
         return (async () => {
+            
             const user = await User.findById(id)
             
             if (!user) throw new NotFoundError(`user with id ${id} not found`)

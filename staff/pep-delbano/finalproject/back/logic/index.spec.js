@@ -901,9 +901,10 @@ describe('logic', () => {
 
     describe('products', () => {
 
-        let product1, product2, product3, product4
+        let product1, product2, product3, product4, productId, userId
         
         beforeEach(async () => {
+
             product1 = new Product({type: "sandwich", name: "Beirut", price: 3.5, image: "foto.png", quantity: "1", description: "Cucumber, Hummus, Olive cream & Mezclum"})
             
             await product1.save()
@@ -919,6 +920,17 @@ describe('logic', () => {
             product4 = new Product({type: "sandwich", name: "Oslo", price: 4.9, image: "foto.png", quantity: "1", description: "Smoked Salmon, Cucumber, Canons & Citrus"})
             
             await product4.save()
+
+
+            productId = product1.id
+    
+            let user
+    
+            user = new User({ type: 'Individual', name: 'James', surname: 'Doe', email: 'james@jd.com', username: 'jamesd', password: '123' })
+    
+            await user.save()
+    
+            userId = user.id
             
         })
         
@@ -961,19 +973,102 @@ describe('logic', () => {
 
             it('should succeed on adding a product to user Cart', async () => {
                 
-                const productId = product1.id.toString()
-
-                let user
-    
-                user = new User({ type: 'Individual', name: 'James', surname: 'Doe', email: 'james@jd.com', username: 'jamesd', password: '123' })
-    
-                await user.save()
-    
-                const userId = user.id
-                
                 await logic.addProductToUserCart(userId, productId)
                     
             })
+
+
+            it('should fail on undefined userId', () => {
+
+                expect(() => logic.addProductToUserCart(undefined, productId)).to.throw(TypeError, 'undefined is not a string')
+
+            }),
+
+
+            it('should fail on null userId', () => {
+
+                expect(() => logic.addProductToUserCart(null, productId)).to.throw(TypeError, 'null is not a string')
+
+            })
+
+
+            it('should fail on blank userId', () => {
+
+                expect(() => logic.addProductToUserCart('     \n', productId)).to.throw(ValueError, 'id is empty or blank')
+
+            })
+
+
+            it('should fail on number userId', () => {
+
+                expect(() => logic.addProductToUserCart(123, productId)).to.throw(TypeError, '123 is not a string')
+            })
+
+
+            it('should fail on boolean userId', () => {
+
+                expect(() => logic.addProductToUserCart(true, productId)).to.throw(TypeError, 'true is not a string')
+            })
+
+
+            it('should fail on array userId', () => {
+
+                expect(() => logic.addProductToUserCart([1, 2], productId)).to.throw(TypeError, '1,2 is not a string')
+            })
+
+
+            it('should fail on object userId', () => {
+
+                expect(() => logic.addProductToUserCart({ key: 'value' }, productId)).to.throw(TypeError, '[object Object] is not a string')
+            })
+
+
+
+
+            it('should fail on undefined userId', () => {
+
+                expect(() => logic.addProductToUserCart(userId, undefined)).to.throw(TypeError, 'undefined is not a string')
+
+            }),
+
+
+            it('should fail on null userId', () => {
+
+                expect(() => logic.addProductToUserCart(userId, null)).to.throw(TypeError, 'null is not a string')
+
+            })
+
+
+            it('should fail on blank userId', () => {
+
+                expect(() => logic.addProductToUserCart(userId, '     \n')).to.throw(ValueError, 'productId is empty or blank')
+
+            })
+
+
+            it('should fail on number userId', () => {
+
+                expect(() => logic.addProductToUserCart(userId, 123)).to.throw(TypeError, '123 is not a string')
+            })
+
+
+            it('should fail on boolean userId', () => {
+
+                expect(() => logic.addProductToUserCart(userId, true)).to.throw(TypeError, 'true is not a string')
+            })
+
+
+            it('should fail on array userId', () => {
+
+                expect(() => logic.addProductToUserCart(userId, [1, 2])).to.throw(TypeError, '1,2 is not a string')
+            })
+
+            
+            it('should fail on object userId', () => {
+
+                expect(() => logic.addProductToUserCart(userId, { key: 'value' })).to.throw(TypeError, '[object Object] is not a string')
+            })
+
 
         })
     })
