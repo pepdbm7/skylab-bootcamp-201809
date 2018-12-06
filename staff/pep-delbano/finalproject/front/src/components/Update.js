@@ -6,6 +6,10 @@ import logic from '../logic'
 class Update extends Component {
     state = { errorMessage: null, successMessage: null, type: '', name: '', surname: '', email:'', username: '', newPassword: '', confirmPassword: '', password: '' }
 
+    componentDidMount = () => {
+        this.setState({errorMessage: null, successMessage: null})          
+    }
+
     handleTypeChange = event => {
         const type = event.target.value
 
@@ -61,27 +65,24 @@ class Update extends Component {
         try {
             logic.sendUpdatedInfo( type, name, surname, email, username, newPassword, confirmPassword, password )
                 .then(() => {
-                    this.setState({ registerDoneMessage: 'Great! Account updated!!' })
+                    this.setState({ successMessage: 'Account updated!!' })
                     setTimeout(() => {
                         this.setState({successMessage: null})
-                        this.props.history.push('/profile')
-                                     
-                    }, 2500) 
+                        this.props.history.push('/profile')              
+                    }, 1500) 
                 })
                 .catch((err) => {
                     this.setState({ errorMessage: err.message }, () =>{
-                        debugger
                         setTimeout(() => {
                             this.setState({errorMessage: null})                
-                        }, 3000)
+                        }, 2000)
                     })
                 })
         } catch(err) {
             this.setState({ errorMessage: err.message }, () =>{
-                debugger
                 setTimeout(() => {
                     this.setState({errorMessage: null})                
-                }, 3000)
+                }, 2000)
             })
         }
 

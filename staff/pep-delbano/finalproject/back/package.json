@@ -7,8 +7,11 @@
     "debug": "node debug .",
     "test": "mocha logic",
     "debug-test": "mocha debug logic",
-    "test-data": "mocha data"
+    "test-data": "mocha data",
+    "coverage" : "nyc mocha logic/index.spec.js",
+    "coverage-report": "nyc report --reporter=html"
   },
+  
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -23,8 +26,9 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
-    "planbe-data": "file:../planbe-data",
-    "chai": "^4.2.0"
+    "chai": "^4.2.0",
+    "nyc": "^13.1.0",
+    "planbe-data": "file:../planbe-data"
   },
   "description": ""
 }

@@ -5,7 +5,6 @@ function routeHandler(callback, res) {
         callback()
             .catch(err => {
                 const { message } = err
-         
                 if (err instanceof AuthError) {
                     res.status(401)
                 } else if (err instanceof AlreadyExistsError) {
@@ -21,7 +20,6 @@ function routeHandler(callback, res) {
                 })
             })
     } catch (err) {
- 
         const { error: message } = err
 
         if (err instanceof TypeError || err instanceof ValueError) {

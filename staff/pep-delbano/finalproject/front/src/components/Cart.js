@@ -115,7 +115,7 @@ class Cart extends Component {
               
             <div className="cart__footer">
                 { this.state.total > 0 && <Total calculatedTotal={this.state.total}/> }
-                <button className="btn btn-primary btn-lg cart__submit-button" type="submit" onClick={this.handleClick}>NEXT</button>
+  { this.state.total > 0 && <button className="btn btn-primary btn-lg cart__submit-button" type="submit" onClick={this.handleClick}>NEXT</button> }
             </div>
       </div> )
     }

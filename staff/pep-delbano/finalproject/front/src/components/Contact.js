@@ -6,8 +6,12 @@ import Header from './Header'
 // import logic from '../logic'
 
 class Contact extends Component {
-    state = { successMessage: null, errorMessage: null, subject: '', textarea: '' }
+    state = { errorMessage: null, successMessage: null, subject: '', textarea: '' }
 
+    componentDidMount = () => {
+        this.setState({errorMessage: null, successMessage: null})          
+    }
+    
     handleSubject = event => {
         const subject = event.target.value
 
@@ -24,31 +28,28 @@ class Contact extends Component {
         event.preventDefault()
 
         const { subject, textarea } = this.state
+        debugger
 
         try {
             logic.sendContactForm(subject, textarea)
-            .then(()=> {
-                debugger
-                this.setState({ successMessage: 'Great!! We will answer you ASAP to your email!', subject: '', textarea: '' }, () => {
-                        setTimeout(() => {
-                            this.setState({successMessage: null})               
-                        }, 3000)
-                    })       
+            .then(() => {
+                this.setState({ successMessage: 'Thanks, We will answer you ASAP to your email!',  errorMessage: null, subject: '', textarea: ''})
+                setTimeout(() => {
+                    this.setState({successMessage: null})             
+                }, 1500)
             })
             .catch((err) => {
-                debugger
                 this.setState({ errorMessage: err.message }, () =>{
                     setTimeout(() => {
                         this.setState({errorMessage: null})                
-                    }, 3000)
+                    }, 2000)
                 })
             })
         } catch(err) {
-            debugger
             this.setState({ errorMessage: err.message }, () =>{
                 setTimeout(() => {
                     this.setState({errorMessage: null})                
-                }, 3000)
+                }, 2000)
             })
         }
         
@@ -59,8 +60,7 @@ class Contact extends Component {
         let error = () => {
             if (this.state.successMessage) {
                 return (<p className="correct">{this.state.successMessage}</p>)
-            }
-            else if (this.state.errorMessage) {
+            } else if (this.state.errorMessage) {
                 return (<p className="error">{this.state.errorMessage}</p>)
             }
            return null
@@ -71,7 +71,6 @@ class Contact extends Component {
             <div className="contact__container">
                 <h1 className="contact__title">Contact</h1>
             <form className="form-group contact__form" onSubmit={this.handleSubmit}>
-
                     <div className="form-group">
                         <label>SUBJECT</label>
                         <input className="form-control"  type="text" required autofocus="true" placeholder="Email subject" onChange={this.handleSubject} />
@@ -79,13 +78,13 @@ class Contact extends Component {
 
                     <div className="form-group">
                         <label>MESSAGE</label>
-                        <textarea className="form-control contact__textarea" type="text" required placeholder="Type your message here..." onChange={this.handleTextarea} />
+                        <textarea className="form-control" type="text" required placeholder="Type your message here..." onChange={this.handleTextarea} />
                     </div>
                 
-                <div className="form-group">
-                    <button className="btn btn-primary btn-lg"type="submit">Send</button>
-                </div>
-                {error()}
+                    <div className="form-group">
+                        <button className="btn btn-primary btn-lg"type="submit">Send</button>
+                    </div>
+                    {error()}
             </form>
 
             <section className="contact__section2">

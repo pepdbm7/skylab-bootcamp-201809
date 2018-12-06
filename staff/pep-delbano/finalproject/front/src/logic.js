@@ -5,6 +5,7 @@ const logic = {
     url: 'NO-URL',
 
     registerUser(type, name, surname, email, username, password) {
+        debugger
         if (typeof type !== 'string') throw TypeError(`${type} is not a string`)
         if (typeof name !== 'string') throw TypeError(`${name} is not a string`)
         if (typeof surname !== 'string') throw TypeError(`${surname} is not a string`)
@@ -100,7 +101,10 @@ const logic = {
     },
 
 
-    // Update Profile:
+
+
+    // Update PROFILE:
+
     sendUpdatedInfo( type, name, surname, email, username, newPassword, confirmPassword, password ) {
 
         if (typeof type !== 'string') throw TypeError(`${type} is not a string`)
@@ -127,22 +131,25 @@ const logic = {
         
         if (newPassword !== confirmPassword) throw Error('new password different of confirmation')
 
-        return fetch(`${this.url}/update/${this._userId}/`, {
+        return fetch(`${this.url}/update/${this._userId}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json; charset=utf-8',
                 'Authorization': `Bearer ${this._token}`
-            }
+            },
+            body: JSON.stringify({ type, name, surname, email, username, newPassword, confirmPassword, password })
         })
-            .then(res => res.json())                                //TODO: NO LLEGAN LOS ERRORES DEL BACK!!!??
+            .then(res => res.json()) 
             .then(res => {
-                debugger
                 if (res.error) throw Error(res.error)
             })
     },
 
-    // 
-    sendContactForm(subject, textarea) {
+
+    //send CONTACT info:
+
+    sendContactForm(subject, textarea) {  //TODO: No funciona!!
+        
         if (typeof subject !== 'string') throw TypeError(`${subject} is not a string`)
         if (typeof textarea !== 'string') throw TypeError(`${textarea} is not a string`)
 
@@ -150,17 +157,17 @@ const logic = {
         if (!textarea.trim()) throw Error('textarea is empty or blank')
 
         return fetch(`${this.url}/contact/${this._userId}`, {
-            method: 'PATCH',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json; charset=utf-8',
                 'Authorization': `Bearer ${this._token}`
             },
             body: JSON.stringify({ subject, textarea })
         })
-        .then(res => res.json())
-        .then(res => {
-             if (res.error) throw Error(res.error)
-        })
+            .then(res => res.json()) 
+            .then(res => {
+                if (res.error) throw Error(res.error)
+            })
     },
 
 
@@ -195,7 +202,6 @@ const logic = {
         })
             .then(res => res.json())
             .then(res => {
-                debugger
                 if (res.error) throw Error(res.error)
             })
     },

@@ -1,8 +1,7 @@
 const mongoose = require('mongoose')
-const User = require('./schemas/schema-order')
+const User = require('./schemas/schema-user')
 const Order = require('./schemas/schema-order')
-const Product = require('./schemas/schema-order')
-const ContactForm = require('./schemas/schema-contactform')
+const Product = require('./schemas/schema-product')
 
 
 module.exports = {
@@ -10,7 +9,6 @@ module.exports = {
     models: {
     Order: mongoose.model('Order', Order),
     User: mongoose.model('User', User),
-    Product: mongoose.model('Product', Product),
-    ContactForm: mongoose.model('ContactForm', ContactForm)
+    Product: mongoose.model('Product', Product)
     }
 }

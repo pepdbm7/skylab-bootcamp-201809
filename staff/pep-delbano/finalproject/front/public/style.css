@@ -408,13 +408,6 @@ body {
   font-size: 20px;
 }
 
-.contact__textarea {
-  transition: height 1s ease-out;
-}
-
-.contact__textarea:focus {
-    height: 200px;
-}
 
 .contact__section2 {
   display: flex;
@@ -691,47 +684,7 @@ body {
 
 /* SETORDER PAGE */
 
-/* DETAILS Form */
-.detailsDisabled {
-  display: none;
-}
-
-.detailsActive {
-  display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100vw;
-    background-image: url(./img/bgpattern.PNG);
-}
-
-.orderDetails__title {
-  font-family: 'Dosis', sans-serif;
-  margin: 50px;
-  font-size: 6vw;
-  font-weight: 900px;
-  color: #1C06A8;
-  text-shadow: 3px 2px 5px #0000005e;
-}
-.orderDetails__form h2 {
-  font-size: 15;
-  font-weight: 600;
-}
-
-.orderDetails__form {
-  min-width: 340px;
-  width: 500px;
-  height: 90vh;
-  background: hsla(0, 0%, 96%, 0.719);
-  padding: 20px;
-  padding-top: 30px;
-  border-radius: 5px;
-  box-shadow: 0px 0px 10px #0000005e;
-}
-
-
-
-/* PAYMENT Form */
-.payDisabled {
+.detailsDisabled, .payDisabled {
   display: none;
 }
 
@@ -750,24 +703,58 @@ body {
   background-size: cover;
 }
 
-.payment__title {
+.detailsActive {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  background-image: url(./img/bgpattern.PNG);
+}
+
+.orderDetails__title, .payment__title {
   font-family: 'Dosis', sans-serif;
   margin: 50px;
   font-size: 6vw;
   font-weight: 900px;
   color: #1C06A8;
   text-shadow: 3px 2px 5px #0000005e;
-  top: 100px;
+}
+.orderDetails__form h2, .payment__form h2 {
+  font-weight: 900;
 }
 
-.payment__form{
-  width: 500px;
-  background: hsla(0, 0%, 96%, 0.719);;
+.orderDetails__form, .payment__form {
+  min-width: 340px;
+  width: 510px;
+  height: 65vh;
+  background: hsla(0, 0%, 96%, 0.9);
   padding: 20px;
-  padding-top: 30px;
-  border-radius: 5px;
-  box-shadow: 0px 0px 10px #0000005e;
+  border-radius: 10px;
+  box-shadow: 0px 0px 35px #0000005e;
 }
+
+.setOrder__textInput {
+  font-family: 'Playfair+Display', sans-serif;
+  color: #0f0f81;
+}
+
+.orderDetails__date, .payment__expiration {
+  display: flex;
+  flex-direction: row;
+}
+
+.orderDetails__date--input, .payment__expirationInput {
+  margin-right: 5%;
+  width: 90px;
+}
+
+.payment__CVC {
+  margin-bottom: 15px;
+  width: 90px;
+}
+
+
 
 
 /*MODAL BOX*/
@@ -838,10 +825,10 @@ body {
 }
 
 .orders__container {
-  margin-top: 13vh;
   min-height: 170vh;
-  min-width: 540px;
-  background-color: hsla(0, 6%, 81%, 0.842);
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(125, 125, 134, 0.3);
 }
 
 
@@ -856,7 +843,7 @@ body {
 }
 
 .orders__message {
-  font-size: 20px;
+  font-size: 25px;
   font-weight: 900;
   text-align: center;
 }
@@ -865,10 +852,10 @@ body {
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  background-color: hsla(32, 61%, 64%, 0.616);
+  background-color: rgba(195, 190, 184, 0.93);
   box-shadow: 2px 2px 8px black;
   border-radius: 5px;
-  width: 80%;
+  width: 60%;
   padding: 20px;
   margin-left: 30px;
   margin-bottom: 40px;
@@ -896,7 +883,7 @@ body {
 }
 
 .productOrderSingle__container {
-  background: hsl(9, 13%, 68%);
+  background: rgb(117, 105, 103);
   color: black;
   margin: 2px 5px;
   border-radius: 5px;
@@ -904,9 +891,11 @@ body {
 }
 
 .boughtProduct__container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
   background-color: rgba(158, 126, 126, 0.794);
-  width: 15%;
-  min-width: 100px;
+  min-width: 125px;
   border-radius: 5px;
   padding: 5px;
   margin: 0px 15px 30px 10px;
@@ -914,8 +903,8 @@ body {
 }
 
 .product__name {
-  font-size: 30px;
-    margin: 5px;
+  font-size: 20px;
+  margin-bottom: 5px;
 }
 
 .product__image {

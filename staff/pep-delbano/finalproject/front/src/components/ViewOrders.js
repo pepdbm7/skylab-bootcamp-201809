@@ -19,7 +19,7 @@ class ViewOrders extends Component {
         return( <div className="orders__page">
             <Header home={false} profile={false} contact={false} cart={false} vieworders={true} />
             <article className="orders__container">
-                <h1 className="orders__title">Orders History</h1>
+                <h1 className="orders__title">Order History</h1>
                 
                 { !this.state.orders.length && <p className="orders__message">You don't have any fininshed order yet! <br/> ...go to home to see our products!</p> }
                 

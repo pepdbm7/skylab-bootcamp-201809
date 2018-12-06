@@ -22,7 +22,7 @@ class Product extends Component {
                     <div className="product__quantityController">
                     <div onClick={() => this.props.onDeleteMore(this.props.id)}><i className="fa fa-minus-circle product__button--minus" aria-hidden="true"></i></div>
 
-                { this.props.quantity > 1 &&
+                { this.props.quantity &&
                     <input className="product__quantity" disabled type="text" placeholder={`x ${this.props.quantity}`} />
                 }
 

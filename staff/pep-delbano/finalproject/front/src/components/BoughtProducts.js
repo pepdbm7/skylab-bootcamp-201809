@@ -7,8 +7,8 @@ const BoughtProducts = (props) => {
                     <h2 className="product__name">{props.name}</h2>
                     <p className="product__type">{props.type}</p>
 
-                    { props.quantity > 1 ? <p className="product__price">{props.price} € x {props.quantity}</p>
-                    : <p className="product__price">{props.price} €</p> }
+                    <p className="product__price">{props.price} €/unit</p>
+                   
                 </article>
 }
 

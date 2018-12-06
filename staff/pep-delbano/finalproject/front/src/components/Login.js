@@ -5,16 +5,6 @@ import logic from '../logic'
 class Login extends Component {
     state = { successMessage: null, errorMessage: null, username: '', password: '' }
 
-    componentWillReceiveProps(props){
-
-        this.setState({message:props.message}, () => {
-
-            setTimeout(() => {
-                this.setState({message: null})                
-            }, 3000)
-        });
-    }
-
     handleUsernameChange = event => {
         const username = event.target.value
 
@@ -36,18 +26,13 @@ class Login extends Component {
             logic.login(username, password)  
                 .then(() => {
                     this.props.history.push('/home')})
-                    // this.setState({ successMessage: `Welcome, ${username} !!`, username: '', password: ''}, () => {
-                    //     setTimeout(() => {
-                    //         this.setState({successMessage:null})
-                    //     }, 2500)
-                    // })
-                    .catch((err) => {
-                        this.setState({ errorMessage: err.message }, () =>{
-                            setTimeout(() => {
-                                this.setState({errorMessage: null})                
-                            }, 3000)
-                        })
+                .catch((err) => {
+                    this.setState({ errorMessage: err.message }, () =>{
+                        setTimeout(() => {
+                            this.setState({errorMessage: null})                
+                        }, 3000)
                     })
+                })
         } catch(err) {
             this.setState({ errorMessage: err.message }, () =>{
                 setTimeout(() => {

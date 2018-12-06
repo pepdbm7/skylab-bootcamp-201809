@@ -9,27 +9,34 @@ global.sessionStorage = require('sessionstorage')
 const logic = require('./logic')
 
 logic.url = 'http://localhost:5000/api'
-// logic.url = 'http://192.168.0.82:5000' // DEV server!
 
 const { expect } = require('chai')
+
+const MONGO_URL = 'mongodb://localhost:27017/planbe-test'
 
 // running test from CLI
 // normal -> $ mocha src/logic.spec.js --timeout 10000
 // debug -> $ mocha debug src/logic.spec.js --timeout 10000
 
 describe('logic', () => {
+
+    before(() => mongoose.connect(MONGO_URL, { useNewUrlParser: true, useCreateIndex: true }))
+
+    beforeEach(() => Promise.all([User.deleteMany()]))
+
     describe('users', () => {
         describe('register', () => {
+
             it('should succeed on correct data', () =>
-                logic.registerUser('John', 'Doe', `jd-${Math.random()}`, '123')
+                logic.registerUser('Individual', 'John', 'Doe', 'jd@jd.com', `jd-${Math.random()}`, '123')
                     .then(() => expect(true).to.be.true)
             )
 
             it('should fail on trying to register twice same user', () => {
                 const username = `jd-${Math.random()}`
 
-                return logic.registerUser('John', 'Doe', username, '123')
-                    .then(() => logic.registerUser('John', 'Doe', username, '123'))
+                return logic.registerUser('Individual', 'John', 'Doe', 'jd1@jd.com', username, '123')
+                    .then(() => logic.registerUser('Individual', 'John', 'Doe', 'jd2@jd.com', username, '123'))
                     .catch(err => {
                         expect(err).not.to.be.undefined
                         expect(err.message).to.equal(`username ${username} already registered`)
@@ -40,6 +47,33 @@ describe('logic', () => {
                 expect(() =>
                     logic.registerUser(undefined, 'Doe', 'jd', '123')
                 ).to.throw(TypeError, 'undefined is not a string')
+            })
+
+            
+            it('should fail if email is already used', async () => {
+                const res = await logic.registerUser(type, name, surname, email, username, password)
+
+                expect(res).to.be.undefined
+
+                expect(() => logic.registerUser('Individual', 'Pepe', 'Lopez', email, 'pepelopez', '123')).to.throw(AlreadyExistsError, `Email ${email} already registered`)
+                
+                const users = await User.find()
+
+                expect(users.length).to.equal(1)
+            
+            })
+
+            it('should fail if username is already used', async () => {
+                const res = await logic.registerUser(type, name, surname, email, username, password)
+
+                expect(res).to.be.undefined
+
+                expect(() => logic.registerUser('Individual', 'Pepe', 'Lopez', 'pepelopez@pepe.com', username, '123')).to.throw(AlreadyExistsError, `Username ${username} already registered`)
+                
+                const users = await User.find()
+
+                expect(users.length).to.equal(1)
+            
             })
 
             // TODO other cases

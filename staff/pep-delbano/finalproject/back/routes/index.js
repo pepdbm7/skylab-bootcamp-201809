@@ -21,11 +21,11 @@ router.post('/users', jsonBodyParser, (req, res) => {
     routeHandler(() => {
         const { type, name, surname, email, username, password } = req.body
         return logic.registerUser(type, name, surname, email, username, password)
-        .then(()=> logic.sendConfirmationRegistration(name, email))
-        .then(() => {
-            res.status(201)
-                res.json({
-                    message: `${username} successfully registered`
+            .then(()=> logic.sendConfirmationRegistration(name, email))
+            .then(() => {
+                res.status(201)
+                    res.json({
+                        message: `${username} successfully registered`
                 })
             })
     }, res)
@@ -70,15 +70,17 @@ router.get('/users/:id', [bearerTokenParser, jwtVerifier], (req, res) => {
 router.patch('/update/:id', [bearerTokenParser, jwtVerifier, jsonBodyParser], (req, res) => {
     routeHandler(() => {
         const { params: { id }, sub, body: { type, name, surname, email, username, newPassword, password } } = req
-
+        
         if (id !== sub) throw Error('token sub does not match user id')
 
         return logic.updateUser(id, type, name, surname, email, username, newPassword, password)
-        .then(() => logic.sendAccountUpdated(name, email, username, newPassword))
-        .then(() =>
-        res.json({
-            message: 'user updated!'
-        })
+            .then(() => {
+                logic.sendAccountUpdated(name, email, username, newPassword)
+            })
+            .then(() =>
+                res.json({
+                    message: 'user updated!'
+            })
         )
     }, res)
 })
@@ -86,20 +88,14 @@ router.patch('/update/:id', [bearerTokenParser, jwtVerifier, jsonBodyParser], (r
 
 
 // CONTACT FORM:
-router.patch('/contact/:id', [bearerTokenParser, jwtVerifier, jsonBodyParser], (req, res) => {
-
+router.post('/contact/:id', [bearerTokenParser, jwtVerifier, jsonBodyParser], (req, res) => {
     routeHandler(() => {
-        const { sub, params: { subject, textarea } } = req
+        const { sub, params: { id }, body: { subject, textarea } } = req
         
         if (id !== sub) throw Error('token sub does not match user id')
-
-        return logic.saveContactForm(id, subject, textarea)
-            .then(() => logic.sendContactForm(id, subject, textarea))
-            .then(() => res.json({
-                message: 'Your message is sent to the Planbe team!'
-            })
-        )
-
+        debugger
+        return logic.sendContactForm(id, subject, textarea)
+            
     }, res)
 })
 

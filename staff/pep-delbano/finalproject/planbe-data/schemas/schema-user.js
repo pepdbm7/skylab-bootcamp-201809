@@ -1,6 +1,5 @@
 const { Schema, SchemaTypes:{ObjectId} } = require('mongoose')
 const Order = require('../schemas/schema-order')
-const ContactForm = require('../schemas/schema-contactform')
 
 
 const User = new Schema({
@@ -34,10 +33,7 @@ const User = new Schema({
         type: ObjectId,
         ref: 'Product'
     }],
-    orders: [Order],
-    contactForms: [ContactForm]
-
-    
+    orders: [Order]
 })
 
 module.exports = User

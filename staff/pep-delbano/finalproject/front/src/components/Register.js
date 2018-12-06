@@ -55,21 +55,21 @@ class Register extends Component {
                         setTimeout(() => {
                             this.setState({registerDoneMessage: null})
                             this.props.history.push('/login')                
-                        }, 3000)
+                        }, 2000)
                     })       
             })
             .catch((err) => {
                 this.setState({ registerErrorMessage: err.message }, () =>{
                     setTimeout(() => {
                         this.setState({registerErrorMessage: null})                
-                    }, 3000)
+                    }, 2000)
                 })
             })
         } catch(err) {
             this.setState({ registerErrorMessage: err.message }, () =>{
                 setTimeout(() => {
                     this.setState({registerErrorMessage: null})                
-                }, 3000)
+                }, 2000)
             })
         }
 

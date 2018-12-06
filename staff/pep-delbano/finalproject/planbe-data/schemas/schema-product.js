@@ -1,4 +1,4 @@
-const { Schema, SchemaTypes: { ObjectId } } = require('mongoose')
+const { Schema } = require('mongoose')
 
 const Product = new Schema({
     type: {
@@ -18,13 +18,12 @@ const Product = new Schema({
         data: Buffer,
         required: true 
     },
-    descritpion: {
+    description: {
         type: String,
         required: true
     }
 })
 
-module.exports = {
-    Product
-}
+module.exports = Product
+
 

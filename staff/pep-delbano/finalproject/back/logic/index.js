@@ -1,4 +1,4 @@
-const { models: { Product, Order, User, ContactForm } } = require('planbe-data')
+const { models: { Product, Order, User } } = require('planbe-data')
 
 const nodemailer = require('nodemailer')
 const sendgridTransport = require('nodemailer-sendgrid-transport')
@@ -16,6 +16,22 @@ const validate = require('../utils/validate')
 // const path = require('path')
 
 const logic = {
+
+    /**
+   * Register a user
+   * 
+   * @param {*} type 
+   * @param {*} name 
+   * @param {*} surname
+   * @param {*} username
+   * @param {*} email
+   * @param {*} password 
+   * 
+   * @throws {AlreadyExistsError} On already registered user with that username
+   * @throws {AlreadyExistsError} On already registered user with that email
+   */
+
+
     registerUser(type, name, surname, email, username, password) {
         validate([
             { key: 'type', value: type, type: String },
@@ -29,15 +45,21 @@ const logic = {
         return (async () => {
             let user = await User.findOne({ username })
             let _email = await User.findOne({ email })
-
+            
             if (user) throw new AlreadyExistsError(`Username ${username} already registered`)
             if (_email) throw new AlreadyExistsError(`Email ${email} already registered`)
 
             user = new User({ type, name, surname, email, username, password })
             await user.save()
-
         })()
     },
+
+    /**
+   * send confirmation email of registration!
+   * 
+   * @param {*} name
+   * @param {*} email
+   */
 
     sendConfirmationRegistration(name, email) {
         validate([
@@ -46,13 +68,21 @@ const logic = {
         ])
 
         return transporter.sendMail({
-            to: email,
-            from: 'planbe@gmail.com',
+            to: 'testplanbe@gmail.com', //será el email del cliente
+            from: 'pepdbm7@gmail.com',  //aquí irá el email de la empresa
             subject: 'Sign in completed',
             html: `<h1>Hey ${name}!!</h1>
             <h2>you have succesfully registered!</h2>`
         })
     },
+
+    /**
+   * Authenticate a user
+   * 
+   * @param {*} username 
+   * @param {*} password 
+   * @throws {AuthError} if no user with that username found, or if password is wrong
+   */
 
     authenticateUser(username, password) {
         validate([
@@ -62,12 +92,20 @@ const logic = {
 
         return (async () => {
             const user = await User.findOne({ username })
-
+            
             if (!user || user.password !== password) throw new AuthError('invalid username or password')
 
             return user.id
         })()
     },
+
+    /**
+   * Retrieve a user
+   * 
+   * @param {*} id
+   * 
+   * @throws {NotFoundError} on user not found
+   */
 
     retrieveUser(id) {
         validate([{ key: 'id', value: id, type: String }])
@@ -83,7 +121,27 @@ const logic = {
         })()
     },
 
-    updateUser(id, type, name, surname, email, username, newPassword, password) {            //TODO: NO SÉ PORQUÉ NO LANZA LOS ERRORES A REACT!!!!!!!!!!!!!
+    /**
+   * update profile of a user
+   * 
+   * @param {*} id
+   * @param {*} type
+   * @param {*} name
+   * @param {*} surname
+   * @param {*} email
+   * @param {*} username
+   * @param {*} newPassword
+   * @param {*} password 
+   * 
+   * @throws {NotFoundError} on not found user with that id
+   * @throws {AuthError} on invalid password
+   * @throws {AlreadyExistsError} on user with that username already existing
+   * @throws {AlreadyExistsError} on user with that email already existing
+   */
+
+
+    updateUser(id, type, name, surname, email, username, newPassword, password) {
+        
         validate([
             { key: 'id', value: id, type: String },
             { key: 'type', value: type, type: String },
@@ -94,13 +152,12 @@ const logic = {
             { key: 'newPassword', value: newPassword, type: String },
             { key: 'password', value: password, type: String }
         ])
-
+        
         return (async () => {
             const user = await User.findById(id)
 
             if (!user) throw new NotFoundError(`user with id ${id} not found`)
-
-            debugger
+            
             if (user.password !== password) throw new AuthError('invalid password')     
 
             const _user = await User.findOne({ username })
@@ -110,7 +167,6 @@ const logic = {
             if (_user) throw new AlreadyExistsError(`username ${username} already exists`)
             if (_email) throw new AlreadyExistsError(`email ${email} already used`)
             
-            debugger
             //cambiamos campos del usario, y salvamos:
             user.type = type
             user.name = name
@@ -124,7 +180,16 @@ const logic = {
         })()
     },
 
-    //send email confirmation Profile Updated!:
+
+    /**
+   * send confirmation email of Profile Updated!
+   * 
+   * @param {*} name
+   * @param {*} email
+   * @param {*} username
+   * @param {*} newPassword
+   */
+
     sendAccountUpdated(name, email, username, newPassword) {
         validate([
             { key: 'name', value: name, type: String },
@@ -133,7 +198,7 @@ const logic = {
             { key: 'newPassword', value: newPassword, type: String }
         ])
         return transporter.sendMail({
-            to: email,
+            to: 'testplanbe@gmail.com',  //será el email del cliente
             from: 'planbe@gmail.com',
             subject: 'Account updated',
             html: `<h1>Hey ${name}!!</h1>
@@ -141,87 +206,74 @@ const logic = {
             <p><strong>Your new username is:</strong> ${username}</p><br/>
             <p><strong>Your new password is:</strong> ${newPassword}</p>`
         })
-    },
-
-
-
-    //save CONTACT FORM into User:
-    saveContactForm(id, subject, textarea) {
-        validate([
-            { key: 'id', value: id, type: String },
-            { key: 'subject', value: subject, type: String },
-            { key: 'textarea', value: textarea, type: String }
-        ])
-
-        return (async () => {
-            const user = await User.findById(userId)
-            
-            if (!user) throw new NotFoundError(`User with id ${userId} not found`)
-
-            const contactform = new ContactForm({ subject: subject,  message: textarea })
-            user.contactForms.forEach(_contactform => {
-                if (_contactform._id === order._id) throw new AlreadyExistsError(`Contact Form with id ${contactform._id} already exists in user!`)
-                
-                //creamos 'id', y borramos el '_id':
-                _contactform.id = contactform._id  
-                delete contactform._id
+            .then((res) => {
+                res.status(201)
+                res.json({
+                message: 'Email correctly sent !!'
+                })
             })
-            debugger
-            await user.contactForms.push(contactform)
-            
-            await user.save()
-            
-        })()
     },
-
-    sendContactForm(id, subject, textarea) {
-        validate([
-            { key: 'id', value: id, type: String },
-            { key: 'subject', value: subject, type: String },
-            { key: 'textarea', value: textarea, type: String }
-        ])
-        return (async () => {
-            const user = await User.findById(userId)
-            
-            if (!user) throw new NotFoundError(`User with id ${userId} not found`)
-
-            const name = user.name
-            const username = user.username
-            const email = user.email 
-
-            await transporter.sendMail({
-                to: 'pepdbm7@gmail.com',  //será el email d la empresa (hola@eatplanbe.com)
-                from: 'planbeapp@gmail.com',  //inventado, sería el email de la app
-                subject: subject,
-                html: `<h1>Message from your client ${name}!!</h1>
-                <h2>you have succesfully updated your account!</h2>
-                <p><strong>Client's username:</strong> ${username}<br/><br/>
-                <strong>Client's email address:</strong> ${email}</p><br/><br/>
-                <i>${textarea}/i>`
-            })
-
-        }) 
-    },
-
-
-
 
     /**
-     * Adds a product
-     * 
-     * @param {string} id The user id
-     * @param {string} productId The product productId
-     * 
-     * @throws {TypeError} On non-string user id, or non-string product productId
-     * @throws {Error} On empty or blank user id or product productId
-     * 
-     * @returns {Promise} Resolves on correct data, rejects on wrong user id
-     */
+   * send inquiry to the planbe team (for Next Iteration!)
+   * 
+   * @param {*} id
+   * @param {*} subject
+   * @param {*} textarea
+   * 
+   * @throws {NotFoundError} on not found user with that id
+   */
+
+    // sendContactForm(id, subject, textarea) {
+    //     validate([
+    //         { key: 'id', value: id, type: String },
+    //         { key: 'subject', value: subject, type: String },
+    //         { key: 'textarea', value: textarea, type: String }
+    //     ])
+        
+    //     const user = User.findById(id)
+        
+    //     if (!user) throw new NotFoundError(`User with id ${userId} not found`)
+        
+    //     //cogemos datos del user para incluirla en los emails:
+    //     const name = user.name
+    //     const username = user.username
+    //     const email = user.email
+        
+    //     return (async () => {
+    //         await transporter.sendMail({
+    //             to: 'hola@eatplanbe.com',
+    //             from: 'testplanbe@gmail.com',  //será el email del cliente
+    //             subject: subject,
+    //             html: `<h1>Message from your client ${name}!!</h1>
+    //             <h2>you have succesfully updated your account!</h2>
+    //             <p><strong>Client's username:</strong> ${username}<br/><br/>
+    //             <strong>Client's email address:</strong> ${email}</p><br/><br/>
+    //             <i>${textarea}/i>`
+    //         })
+            //email para la empresa
+                // .then(() => {
+    //             await transporter.sendMail({
+    //             to: 'testplanbe@gmail.com',  //será el email d la empresa (hola@eatplanbe.com)
+    //             from: 'hola@eatplanbe.com', 
+    //             subject: subject,
+    //             html: `<h1>Message from your client ${name}!!</h1>
+    //             <h2>you have succesfully updated your account!</h2>
+    //             <p><strong>Client's username:</strong> ${username}<br/><br/>
+    //             <strong>Client's email address:</strong> ${email}</p><br/><br/>
+    //             <i>${textarea}/i>`
+    //             })
+        // })      
+    // },
 
 
+     /**
+   * lists all products from database
+   * 
+   * @throws {NotFoundError} on any found products on database
+   */
 
 
-    //HOME:
     retrieveAllProducts() {
         return (async () => {
             const projection = { _id: true, type: true, name: true, price: true, image: true, description: true}
@@ -236,9 +288,25 @@ const logic = {
         })()
     },
 
+     /**
+   * add selected products to user's basket
+   * 
+   * @param {*} id
+   * @param {*} type
+   * @param {*} name
+   * @param {*} surname
+   * @param {*} email
+   * @param {*} username
+   * @param {*} newPassword
+   * @param {*} password 
+   * 
+   * @throws {NotFoundError} on not found user with that id
+   * @throws {AuthError} on invalid password
+   * @throws {AlreadyExistsError} on user with that username already existing
+   * @throws {AlreadyExistsError} on user with that email already existing
+   */
 
 
-    //add product to Cart:
     addProductToUserCart(id, productId) {  //al clicar el botón 'añadir a carrito'
         validate([
             { key: 'id', value: id, type: String },
@@ -260,6 +328,14 @@ const logic = {
 
         })()
     },
+
+     /**
+   * lists selected products to the cart
+   * 
+   * @param {*} id
+   * 
+   * @throws {NotFoundError} on not found user with that id
+   */
 
     listCartProducts(id) {
         validate([
@@ -292,14 +368,18 @@ const logic = {
                     products.forEach(_product => products.filter(__product =>  __product.id !== _product.id))
 
                     const flags = new Set();
-                    const productsToList = products.filter(product => {
+                    let productsToList = products.filter(product => {
                         if (flags.has(product.id)) {
                             return false
                         }
                         flags.add(product.id);
                         return product;
-                    });
-                        return productsToList
+                        });
+
+                    //para que se listen siempre en el mismo orden, aunque con el delete se cambie
+                    productsToList = productsToList.sort((a,b) => (a.id > b.id) ? 1 : ((b.id > a.id) ? -1 : 0))
+                    
+                    return productsToList
 
             } else {  //si basket.length = 0:
                 return []
@@ -313,8 +393,10 @@ const logic = {
      * @param {string} id The user id
      * @param {string} productId The product id
      * 
-     * @throws {TypeError} On non-string user id, or non-string product id
-     * @throws {Error} On empty or blank user id or product text
+     * @throws {NotFoundError} On not found user id, or not found product id
+     * @throws {NotFoundError} On not found user's basket
+     * @throws {NotFoundError} On not found product with that id
+     * @throws {NotFoundError} On not found product in the basket
      * 
      * @returns {Promise} Resolves on correct data, rejects on wrong user id, or product id
      */
@@ -330,21 +412,44 @@ const logic = {
 
             if (!user) throw new NotFoundError(`user with id ${id} not found`)
 
-            if (user.basket.length) {
+            let basket = user.basket
+
+            if (!basket) throw new NotFoundError(`user 's basket not found`)
+
+            const product = await Product.findById(productId)
+
+            if (!product) throw new NotFoundError(`product with id ${productId} not found`)
+
+            if (basket.length) {
+
+                const productInCart = user.basket.filter(_productId => _productId == productId)
+
+                if (!productInCart.length) throw new NotFoundError(`product with id ${productId} not found in the basket`)
+
                 const duplicated = user.basket.filter(_productId => _productId == productId)
                 const different =  user.basket.filter(_productId => _productId != productId)
 
-                if (!user.basket) throw new NotFoundError(`user 's basket not found`)
 
                 if(duplicated.length) {
                     duplicated.pop()
-                    user.basket = (duplicated).concat(different)
+                    user.basket = (different).concat(duplicated)
                 }
                 await user.save()
                 
             }
         })()
     },
+
+    /**
+     * Adds one more of a selected product
+     * 
+     * @param {string} id The user id
+     * @param {string} productId The product id
+     * 
+     * @throws {NotFoundError} On not found user id, or not found product id
+     * 
+     * @returns {Promise} Resolves on correct data, rejects on wrong user id, or product id
+     */
 
     addMore(id, productId) {
         validate([
@@ -369,10 +474,21 @@ const logic = {
     },
 
 
+     /**
+     * create new order:
+     * 
+     * @param {string} userId The user id
+     * @param {array} products The product of the basket
+     * @param {string} total The total to pay
+     * 
+     * @throws {NotFoundError} on not found user with that id
+     * @throws {AlreadyExistsError} On order with that id already existing
+     * 
+     * @returns {Promise} Resolves on correct data, rejects on wrong user id
+     */
     
-    //creamos orden con submit del Cart: (si no se rellenan luego todos los fields, pq cancela, la borraremos)
     createNewOrder (userId, products, total) { 
-        debugger
+        
         validate([
             { key: 'userId', value: userId, type: String },
             { key: 'products', value: products, type: Array },
@@ -390,7 +506,7 @@ const logic = {
                 _order.id = order._id  //creamos id
                 delete order._id //borramos el _id
             })
-            debugger
+            
             await user.orders.push(order)
             
             await user.save()
@@ -398,7 +514,24 @@ const logic = {
         })()
     },
 
-    //to add date and place to order (PATCH):
+     /**
+     * adds details to the new order:
+     * 
+     * @param {string} userId The user id
+     * @param {string} place The address where to drop it
+     * @param {string} day
+     * @param {string} month
+     * @param {string} year
+     * @param {string} time The time frame
+     * @param {string} comments The comments if written
+     * @param {boolean} paid Status of the order
+     * 
+     * @throws {NotFoundError} on not found user with that id
+     * @throws {AlreadyExistsError} On more unfinished orders existing
+     * 
+     * @returns {Promise} Resolves on correct data, rejects on wrong user id
+     */
+
     addDroppingDetails(id, place, day, month, year, time, comments, paid) {
         validate([
             { key: 'id', value: id, type: String },
@@ -456,11 +589,38 @@ const logic = {
         })()
     },
 
+    /**
+     * send confirmation of order by email:
+     * 
+     * @param {string} name
+     * @param {string} email
+     * @param {string} place
+     * @param {string} day
+     * @param {string} month
+     * @param {string} year
+     * @param {string} time
+     * @param {string} comments
+     * @param {array} products
+     * @param {string} total 
+     */
+
     sendConfirmationOrder(name, email, place, day, month, year, time, comments, products, total) {
- 
+        validate([
+            { key: 'name', value: name, type: String },
+            { key: 'email', value: email, type: String },
+            { key: 'place', value: place, type: String },
+            { key: 'day', value: day, type: String },
+            { key: 'month', value: month, type: String },
+            { key: 'year', value: year, type: String },
+            { key: 'time', value: time, type: String },
+            { key: 'comments', value: comments, type: String },
+            { key: 'products', value: products, type: Array },
+            { key: 'paid', value: paid, type: Boolean }
+        ])
+
         return transporter.sendMail({
-            to: email,
-            from: 'planbe@gmail.com',
+            to: 'testplanbe@gmail.com',   //será el email del cliente
+            from: 'hola@eatplanbe.com',
             subject: 'Order completed',
             html: `<h1>Hey ${name}!</h1>
                 <h2 style="color: blue;>Your order has been successfully done!</h2>
@@ -472,6 +632,15 @@ const logic = {
         })
     },
 
+     /**
+     * deletes unfinished orders:
+     * 
+     * @param {string} userId The user id
+     * 
+     * @throws {NotFoundError} on not found user with that id
+     * 
+     * @returns {Promise} Resolves on correct data, rejects on wrong user id
+     */
 
     deleteUnfinishedOrders(id) {
         validate([
@@ -491,12 +660,22 @@ const logic = {
 
                 //recorremos y eliminamos (con un splice) las ordenes pendientes (las q no tienen ciertos campos):
                 await pendingOrders.forEach(x => ordersArray.splice(ordersArray.findIndex(order => !(order.place ||order.day ||order.month ||order.year ||order.comments || order.paid), 1)) )
-                debugger
+                
 
                 await user.save()
             }
         })()
     },
+
+     /**
+     * retrieve all past orders:
+     * 
+     * @param {string} userId The user id
+     * 
+     * @throws {NotFoundError} on not found user with that id
+     * 
+     * @returns {Promise} Resolves on correct data, rejects on wrong user id
+     */
 
     retrieveOrders(id) {
         validate([
