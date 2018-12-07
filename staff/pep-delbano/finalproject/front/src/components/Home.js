@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import Header from './Header'
 import Product from './Product'
 import { withRouter } from 'react-router-dom';
-// import { Container, Row, Col, Card, CardImage, CardBody, CardTitle, CardText, CardFooter, Fa, Tooltip, Badge, Button } from 'mdbreact';
 import logic from '../logic'
 
 
@@ -11,8 +10,10 @@ class Home extends Component {
 
   componentDidMount() {
     logic.listAllProducts()
-      .then(products =>this.setState({ products }) )
-    // TODO error handling!
+      .then(products =>{
+        debugger
+        this.setState({ products })} )
+    
   }
 
 
@@ -25,6 +26,7 @@ class Home extends Component {
   }
 
   render() {
+    debugger
     //le pasamos al hijo Product por props los fields q necesitará imprimir dl objeto q tenemos en l state
     return (
       <div className="home__page">

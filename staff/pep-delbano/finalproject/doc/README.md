@@ -20,7 +20,7 @@ NodeJS, Express, MongoDB, Mongoose, Nodemailer, SendGrid, Mocha, JWT
 
 ES6, React, Mdbreact, BEM, Mocha
 
-**Others**: git & github, surge, heroku, creately
+**Others**: git & github, surge, heroku, creately, draw.io
 
   ****
   

@@ -21,7 +21,7 @@ class Cart extends Component {
           sum = sum.toFixed(2)
           this.setState({ total: sum })}
           )
-      // TODO error handling!
+      
   }
 
   addMore = (id) => {

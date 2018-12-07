@@ -68,11 +68,12 @@ const logic = {
         ])
 
         return transporter.sendMail({
-            to: 'testplanbe@gmail.com', //será el email del cliente
-            from: 'pepdbm7@gmail.com',  //aquí irá el email de la empresa
+            to: email, // email del cliente
+            from: 'hola@eatplanbe.com',  // email de la empresa
             subject: 'Sign in completed',
             html: `<h1>Hey ${name}!!</h1>
-            <h2>you have succesfully registered!</h2>`
+            <h2><font color="red">You have succesfully registered!</font></h2><br/><br/>
+            <p><i><u>Planbe</u> Team</i></p>`
         })
     },
 
@@ -198,13 +199,14 @@ const logic = {
             { key: 'newPassword', value: newPassword, type: String }
         ])
         return transporter.sendMail({
-            to: 'testplanbe@gmail.com',  //será el email del cliente
+            to: email,  // email del cliente
             from: 'planbe@gmail.com',
-            subject: 'Account updated',
+            subject: 'Account Updated',
             html: `<h1>Hey ${name}!!</h1>
-            <h2>you have succesfully updated your account!</h2>
+            <h2><font color="red">you have succesfully updated your account!<font></h2><br/><br/>
             <p><strong>Your new username is:</strong> ${username}</p><br/>
-            <p><strong>Your new password is:</strong> ${newPassword}</p>`
+            <p><strong>Your new password is:</strong> ${newPassword}</p><br/><br/>
+            <p><i><u>Planbe</u> Team</i></p>`
         })
             .then((res) => {
                 res.status(201)
@@ -240,25 +242,23 @@ const logic = {
     //     const username = user.username
     //     const email = user.email
         
+    //     //to the user:
     //     return (async () => {
     //         await transporter.sendMail({
-    //             to: 'hola@eatplanbe.com',
-    //             from: 'testplanbe@gmail.com',  //será el email del cliente
+    //             to: email,
+    //             from: 'hola@eatplanbe.com',
     //             subject: subject,
     //             html: `<h1>Message from your client ${name}!!</h1>
-    //             <h2>you have succesfully updated your account!</h2>
-    //             <p><strong>Client's username:</strong> ${username}<br/><br/>
-    //             <strong>Client's email address:</strong> ${email}</p><br/><br/>
-    //             <i>${textarea}/i>`
+    //             <i>${textarea}/i><br/><br/>
+    //             <p><i><u>Planbe</u> Team</i></p>`
     //         })
-            //email para la empresa
-                // .then(() => {
+
+            //to the company:
     //             await transporter.sendMail({
-    //             to: 'testplanbe@gmail.com',  //será el email d la empresa (hola@eatplanbe.com)
-    //             from: 'hola@eatplanbe.com', 
+    //             to: 'hola@eatplanbe.com',
+    //             from: email, 
     //             subject: subject,
     //             html: `<h1>Message from your client ${name}!!</h1>
-    //             <h2>you have succesfully updated your account!</h2>
     //             <p><strong>Client's username:</strong> ${username}<br/><br/>
     //             <strong>Client's email address:</strong> ${email}</p><br/><br/>
     //             <i>${textarea}/i>`

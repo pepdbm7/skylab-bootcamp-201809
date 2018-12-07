@@ -31,22 +31,6 @@ body {
 	transition: color 0.3s;
 }
 
-/* 
-.landing-title::before {
-	content: attr(data-letters);
-	position: absolute;
-	z-index: 2;
-	overflow: hidden;
-	color: hsl(0, 0%, 3%);
-	white-space: nowrap;
-	width: 0%;
-	transition: width 0.4s 0.3s;
-}
-
-.landing-title:hover::before {
-	width: 100%;
-} */
-
 .landing-title:hover {
   color: #1e1a1b;
   cursor: pointer;
@@ -97,7 +81,7 @@ body {
 .landing-subtitle {
   align-self: center;
   font-size: 8vw;
-  font-weight: 300;
+  font-weight: 300; 
 }
 
 
@@ -559,23 +543,16 @@ body {
   font-weight: 700;
 }
 
-.product__button--addToCart {
- background-color: whitesmoke;
- text-align: center;
- color: black;
- margin: 5px auto;
- padding: 5px;
- border: 1px solid black;
- border-radius: 5px;
- height: 30px;
- font-size: 20px;
- width: 35px;
-}
 
-.product__button--addToCart:hover, .product__button--minus:hover, .product__button--plus:hover {
-  box-shadow: 2px 3px 8px hsla(0, 1%, 30%, 0.863);
-  color: gray;
-  cursor: pointer;
+
+
+.product__quantity {
+  width: 30%;
+  text-align: center;
+  font-weight: 800;
+  border: 1px solid black;
+  line-height: 30px;
+  height: 34px;
 }
 
 .product__quantityController {
@@ -585,23 +562,18 @@ body {
   margin: 15px auto;
 }
 
-.product__button--minus {
-  background-color: whitesmoke;
-  color: black;
-  padding: 8px;
-  padding-right: 15px;
-  border: 1px solid rgb(39, 39, 39);
-  border-bottom-left-radius: 50%;
-  border-top-left-radius: 50%;
-}
-
-.product__quantity {
-  width: 30%;
+.product__button--addToCart {
+  background-color: #4CAF50;
   text-align: center;
-  font-weight: 800;
+  color: black;
+  margin: 5px auto;
+  padding: 5px;
   border: 1px solid black;
-  line-height: 30px;
-  height: 34px;
+  border-radius: 35%;
+  height: 30px;
+  font-size: 20px;
+  width: 35px;
+  box-shadow: 0 3px #464545;
 }
 
 .product__button--plus {
@@ -614,6 +586,29 @@ body {
   border-top-right-radius: 50%;
 }
 
+.product__button--minus {
+  background-color: whitesmoke;
+  color: black;
+  padding: 8px;
+  padding-right: 15px;
+  border: 1px solid rgb(39, 39, 39);
+  border-bottom-left-radius: 50%;
+  border-top-left-radius: 50%;
+}
+
+.product__button--addToCart:hover, .product__button--plus:hover {
+  background-color: #3e8e41;
+  cursor: pointer;
+}
+
+.product__button--addToCart:active, .product__button--plus:active, .product__button--minus:active {
+  transform: translateY(4px);
+}
+
+.product__button--minus:hover {
+  background-color: #6d2323;
+  cursor: pointer;
+}
 
 
 /*CART*/
@@ -669,7 +664,8 @@ body {
   }
   .home__type-title-sandwich, .cart__type-title-sandwich, .cart__type-title-salads, .cart__type-title-yogurts, .cart__type-title-juices, .register__title, .login__title, .contact__section2--title, .orderDetails__title, .payment__title, .contact__title, .profile__title, .update__title, .orders__title  {
     font-size: 40px;
-    margin: 50px;
+    margin: 10px;
+    margin-bottom: 20px;
   }
 
   
@@ -828,7 +824,6 @@ body {
   min-height: 170vh;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(125, 125, 134, 0.3);
 }
 
 

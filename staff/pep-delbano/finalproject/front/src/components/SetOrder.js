@@ -220,7 +220,7 @@ class SetOrder extends Component {
                         <input className="form-control setOrder__textInput"  required  type="text" onChange={this.handleHolder} />
                     
                         <h2>CC Number *</h2>
-                        <input className="form-control setOrder__textInput"  required placeholder="xxxx - xxxx - xxxx - xxxx" type="number" maxlength="16" onChange={this.handleCardNum} />
+                        <input className="form-control setOrder__textInput"  required placeholder="xxxx - xxxx - xxxx - xxxx" type="text" maxlength="16" onChange={this.handleCardNum} />
                     
                         <div className="form-group">
                             <h2>Expiry Date *</h2>
@@ -253,7 +253,7 @@ class SetOrder extends Component {
                         </div>
                         
                         <h2>CVC *</h2>
-                        <input className="form-control payment__CVC" required type="password" onChange={this.handleCVC} />
+                        <input className="form-control payment__CVC" required type="password" maxlength="3" onChange={this.handleCVC} />
                         
                         <div className="form-group">
                             <button className="btn btn-primary btn-lg" type="submit">PAY</button>
