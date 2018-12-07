@@ -219,13 +219,15 @@ router.delete('/setorder/:id', [bearerTokenParser, jwtVerifier, jsonBodyParser],
 router.patch('/setorder/:id', [bearerTokenParser, jwtVerifier, jsonBodyParser], (req, res) => {
     routeHandler(() => {
         const { sub, params: { id }, body: { place, day, month, year, time, comments, paid } } = req
-        
+        debugger
         if (id !== sub) throw Error('token sub does not match user id')
-        
         return logic.addDroppingDetails(id, place, day, month, year, time, comments, paid)
-            .then(() => res.json({
+            .then(ok => {
+    debugger                
+
+                res.json({
                 message: 'Order successfully completed!'
-            })
+            })}
         )
 
     }, res)

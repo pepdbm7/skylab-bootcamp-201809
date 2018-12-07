@@ -534,6 +534,7 @@ const logic = {
      */
 
     addDroppingDetails(id, place, day, month, year, time, comments, paid) {
+    
         validate([
             { key: 'id', value: id, type: String },
             { key: 'place', value: place, type: String },
@@ -541,27 +542,28 @@ const logic = {
             { key: 'month', value: month, type: String },
             { key: 'year', value: year, type: String },
             { key: 'time', value: time, type: String },
-            { key: 'comments', value: comments, type: String },
+            { key: 'comments', value: comments, type: String, optional:true},
             { key: 'paid', value: paid, type: Boolean }
         ])
-        
+       
         return (async () => {
             const user = await User.findById(id)
-
+         
             if (!user) throw new NotFoundError(`user with id ${id} not found`)
 
             const userOrders = user.orders
+       
             if (userOrders.length) {
+                
                 //encontramos la order inacabada
                 const pendingOrder = userOrders.find(order => !(order.place && order.time && order.paid))
-     
-                if (pendingOrder.length > 1) throw new AlreadyExistsError(`There are more than one pending order!!!`)
-
+          
+                if (pendingOrder && pendingOrder.length > 1) throw new AlreadyExistsError(`There are more than one pending order!!!`)
+        
                 //reemplazamos el _id por un id:
                 pendingOrder.id = pendingOrder._id
                 delete pendingOrder._id
-
-
+                
                 //creamos y llenamos los nuevos fields d la orden inacabada:
                 pendingOrder.place = place
                 pendingOrder.day = day
@@ -577,15 +579,18 @@ const logic = {
                 const _total = pendingOrder.total
                 const _products = pendingOrder.products.forEach(product => product.name)
 
-
-                 this.sendConfirmationOrder(_name, _email, place, day, month, year, time, comments, _products, _total)
-     
+                
                 //vaciamos su carrito:
                 user.basket = []
-
-             
+                
+                debugger
+                
                 await user.save()
                 
+                
+                await this.sendConfirmationOrder(_name, _email, place, day, month, year, time, comments, _products, _total)
+
+                return true
             }
         })()
     },
@@ -616,7 +621,7 @@ const logic = {
             { key: 'time', value: time, type: String },
             { key: 'comments', value: comments, type: String },
             { key: 'products', value: products, type: Array },
-            { key: 'paid', value: paid, type: Boolean }
+            { key: 'total', value: total, type: String }
         ])
 
         return transporter.sendMail({
