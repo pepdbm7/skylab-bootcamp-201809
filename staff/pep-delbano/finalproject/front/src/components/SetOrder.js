@@ -92,17 +92,19 @@ class SetOrder extends Component {
         }
     }
 
-    onPaySubmit = () => {  //paid!, modal and vieworders:
+    onPaySubmit = event => { //paid!, modal and vieworders:
+        event.preventDefault()
         if (!this.state.holder || !this.state.num || !this.state.exmonth || !this.state.exyear || !this.state.cvc) {
             this.setState({ errorMessage: 'Error: Some required fields still empty!' })
         } else {
             try {
+            
                 let { place, day, month, year, time, comments, paid } = this.state
                 
-                paid = true
-                
-                logic.addDroppingDetails(place, day, month, year, time, comments, paid)
-                    .then(() => this.setState({detailsActive: false, detailsCard: true, show: true}))
+                logic.addDroppingDetails(place, day, month, year, time, comments, paid = true)
+                    .then(() => {
+                        debugger
+                        this.setState({detailsActive: false, detailsCard: true, show: true})})
                 
             } catch ({ message }) {
 
@@ -199,7 +201,7 @@ class SetOrder extends Component {
 
                     <div className="form-group">
                         <h2>Add more details</h2>
-                        <textarea className="form-control setOrder__textInput" type="text" placeholder="Write a comment..." onChange={this.handleComment} />
+                        <textarea className="form-control setOrder__textInput" type="text" required placeholder="Write a comment..." onChange={this.handleComment} />
                     </div>
 
                     <div className="form-group">
@@ -210,6 +212,9 @@ class SetOrder extends Component {
                     <Error message={this.state.errorMessage}/>
                 </form>
             </div>
+
+
+
 
 
             <div className= { `${ this.state.detailsCard ? "payActive" : "payDisabled" }` } >

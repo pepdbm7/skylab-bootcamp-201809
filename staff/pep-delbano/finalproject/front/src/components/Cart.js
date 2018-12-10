@@ -39,7 +39,7 @@ class Cart extends Component {
             this.setState({ total: sum })}
           )
     } catch ({ message }) {
-      alert(message) // HORROR! FORBIDDEN! ACHTUNG!
+      alert(message)
     }
   }
 
@@ -58,7 +58,7 @@ class Cart extends Component {
             this.setState({ total: sum })}
           )
     } catch ({ message }) {
-      alert(message) // HORROR! FORBIDDEN! ACHTUNG!
+      alert(message)
     }
   }
 

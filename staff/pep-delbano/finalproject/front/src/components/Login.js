@@ -23,8 +23,10 @@ class Login extends Component {
         const { username, password } = this.state
         
         try {
+            debugger
             logic.login(username, password)  
                 .then(() => {
+                    debugger
                     this.props.history.push('/home')})
                 .catch((err) => {
                     this.setState({ errorMessage: err.message }, () =>{

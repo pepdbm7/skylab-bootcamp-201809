@@ -226,45 +226,47 @@ const logic = {
    * @throws {NotFoundError} on not found user with that id
    */
 
-    // sendContactForm(id, subject, textarea) {
-    //     validate([
-    //         { key: 'id', value: id, type: String },
-    //         { key: 'subject', value: subject, type: String },
-    //         { key: 'textarea', value: textarea, type: String }
-    //     ])
+    sendContactForm(id, subject, textarea) {
+        debugger
+        validate([
+            { key: 'id', value: id, type: String },
+            { key: 'subject', value: subject, type: String },
+            { key: 'textarea', value: textarea, type: String }
+        ])
+        debugger
+        const user = User.findById(id)
+        debugger
+        if (!user) throw new NotFoundError(`User with id ${userId} not found`)
+        //cogemos datos del user para incluirla en los emails:
+        const name = user.name
+        const username = user.username
+        const email = user.email
+        debugger
         
-    //     const user = User.findById(id)
-        
-    //     if (!user) throw new NotFoundError(`User with id ${userId} not found`)
-        
-    //     //cogemos datos del user para incluirla en los emails:
-    //     const name = user.name
-    //     const username = user.username
-    //     const email = user.email
-        
-    //     //to the user:
-    //     return (async () => {
-    //         await transporter.sendMail({
-    //             to: email,
-    //             from: 'hola@eatplanbe.com',
-    //             subject: subject,
-    //             html: `<h1>Message from your client ${name}!!</h1>
-    //             <i>${textarea}/i><br/><br/>
-    //             <p><i><u>Planbe</u> Team</i></p>`
-    //         })
+        //to the user:
+        return (async () => {
+            debugger
+            await transporter.sendMail({
+                to: email,
+                from: 'pepdbm7@gmail.com', //'hola@eatplanbe.com',
+                subject: subject,
+                html: `<h1>Message from your client ${name}!!</h1>
+                <i>${textarea}/i><br/><br/>
+                <p><i><u>Planbe</u> Team</i></p>`
+            })
 
-            //to the company:
-    //             await transporter.sendMail({
-    //             to: 'hola@eatplanbe.com',
-    //             from: email, 
-    //             subject: subject,
-    //             html: `<h1>Message from your client ${name}!!</h1>
-    //             <p><strong>Client's username:</strong> ${username}<br/><br/>
-    //             <strong>Client's email address:</strong> ${email}</p><br/><br/>
-    //             <i>${textarea}/i>`
-    //             })
-        // })      
-    // },
+            // to the company:
+                await transporter.sendMail({
+                to: 'pepdbm7@gmail.com', //'hola@eatplanbe.com',
+                from: email, 
+                subject: subject,
+                html: `<h1>Message from your client ${name}!!</h1>
+                <p><strong>Client's username:</strong> ${username}<br/><br/>
+                <strong>Client's email address:</strong> ${email}</p><br/><br/>
+                <i>${textarea}/i>`
+                })
+        })      
+    },
 
 
      /**
