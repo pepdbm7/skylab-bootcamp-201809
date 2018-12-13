@@ -9,7 +9,7 @@ class Contact extends Component {
     state = { errorMessage: null, successMessage: null, subject: '', textarea: '' }
 
     componentDidMount = () => {
-        this.setState({errorMessage: null, successMessage: null})          
+        this.setState({errorMessage: null, successMessage: null, subject: '', textarea: ''})          
     }
     
     handleSubject = event => {

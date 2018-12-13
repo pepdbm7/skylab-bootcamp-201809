@@ -5,7 +5,7 @@ const logic = {
     url: 'NO-URL',
 
     registerUser(type, name, surname, email, username, password) {
-        debugger
+        
         if (typeof type !== 'string') throw TypeError(`${type} is not a string`)
         if (typeof name !== 'string') throw TypeError(`${name} is not a string`)
         if (typeof surname !== 'string') throw TypeError(`${surname} is not a string`)

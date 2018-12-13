@@ -93,9 +93,8 @@ router.post('/contact/:id', [bearerTokenParser, jwtVerifier, jsonBodyParser], (r
         const { sub, params: { id }, body: { subject, textarea } } = req
         
         if (id !== sub) throw Error('token sub does not match user id')
-        debugger
-        return logic.sendContactForm(id, subject, textarea)
-            
+        
+        return logic.setContactEmailData(id, subject, textarea)   
     }, res)
 })
 
@@ -219,11 +218,10 @@ router.delete('/setorder/:id', [bearerTokenParser, jwtVerifier, jsonBodyParser],
 router.patch('/setorder/:id', [bearerTokenParser, jwtVerifier, jsonBodyParser], (req, res) => {
     routeHandler(() => {
         const { sub, params: { id }, body: { place, day, month, year, time, comments, paid } } = req
-        debugger
+
         if (id !== sub) throw Error('token sub does not match user id')
         return logic.addDroppingDetails(id, place, day, month, year, time, comments, paid)
-            .then(ok => {
-    debugger                
+            .then(ok => {                
 
                 res.json({
                 message: 'Order successfully completed!'
